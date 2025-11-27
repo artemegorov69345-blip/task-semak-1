@@ -3,9 +3,20 @@
 
 using namespace std;
 
+/**
+* @brief вычисляет площадь круга по длине окружности
+* @param L - длина окружности
+* @return - площадь круга
+*/
+float calculateS(const float d);
+
+/**
+* @brief точка входа в программу
+* @return - 0, если программа выполнена корректно
+*/
 int main() {
     // длина окружности
-    float d;
+    float d=0;
     
     // вводим
     cout << "Введите длину окружности: ";
@@ -16,10 +27,13 @@ int main() {
     
     // площадь круга
     // формула: S = L^2 / (4π)
-    float S = (d * d) / (4 * 3.14159);
+    float S = calculateS(d);
     
     //результат
     cout << "Площадь круга: " << S << endl;
     
     return 0;
+}
+float calculateS(const float d) {
+    return (L * L) / (4 * 3.14);
 }
