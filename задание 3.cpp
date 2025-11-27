@@ -20,7 +20,7 @@ float calculateP(const float h) {ь
 */
 int main() {
     //высота столба воды
-    float h;
+    float h=0;
     
     //вводим
     cout << "Введите высоту столба воды в метрах: ";
