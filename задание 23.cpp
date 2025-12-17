@@ -7,7 +7,7 @@ using namespace std;
 * @return 0 при успешном выполнении
 */
 int main() {
-    float a, b, c;
+    float a = 0.0f, b = 0.0f, c = 0.0f;
     
     // Ввод трех чисел
     cout << "Введите три положительных числа:" << endl;
