@@ -14,7 +14,7 @@ float vY(float x);
 * @return 0 при успешном выполнении
 */
 int main() {
-    float x;
+    float x = 0.0f;
     const float a = 1.6f; // Константа a = 1.6
     
     // Ввод значения x
@@ -44,6 +44,7 @@ int main() {
 
 float vY(float x) {
     const float a = 1.6f; // Константа a = 1.6
+    const float eps = 0.00001f; // точность значения
     
     // Выводим какую ветвь функции мы используем
     cout << "Выбор формулы" << endl;
@@ -54,7 +55,7 @@ float vY(float x) {
         cout << "Используется формула: y = e^(a*x) - 2.5" << endl;
         return exp(a * x) - 2.5f;
     } 
-    else if (x == 0) {
+    else if (fabs(x) < eps) {
         // Вторая ветвь: y = 3, если x = 0
         cout << "x = 0 (" << x << " = 0)" << endl;
         cout << "Используется формула: y = 3" << endl;
