@@ -4,8 +4,8 @@
 using namespace std;
 
 int main() {
-    int n;
-    double e;
+    int n = 0;
+    double e = 0.0;
     
     cout << "Вычисление суммы ряда" << endl;
     cout << "Ряд: sum(k=0 to n) [(-1)^k / (k! * (k+1)!)]" << endl;
@@ -36,7 +36,7 @@ int main() {
         double z = f_k * f_k1;
         
         // Вычисляем текущий элемент
-        double a;
+        double a = 0.0;
         if (k % 2 == 0) {
             a = 1.0 / z;
         } else {
