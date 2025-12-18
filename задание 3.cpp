@@ -6,7 +6,7 @@ using namespace std;
 * @param h - высота столба воды в метрах
 * @return - давление в Паскалях
 */
-float calculateP(const float h) {ь
+float calculateP(const float h) {
     const float p = 1000;        // плотность воды
     const float gravity = 9.8;  // ускорение свободного падения
     
