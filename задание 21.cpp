@@ -32,7 +32,12 @@ float Sv(float x1, float y1, float x2, float y2, float x3, float y3);
 * @return 0 при успешном выполнении
 */
 int main() {
-    float x1, y1, x2, y2, x3, y3;
+    float x1 = 0;
+    float y1 = 0;
+    float y2 = 0;
+    float x2 = 0;
+    float y3 = 0;
+    float x3 = 0;
     int w;
     
     // Ввод координат треугольника
@@ -59,7 +64,7 @@ int main() {
     cin >> w;
     
     // Правильно или нет
-    if (w != P && w != S) {
+    if (w != 1 && w != 2) {
         cout << "Ошибка! Нужно выбрать 1 или 2!" << endl;
         return 1; // Завершаем программу с ошибкой
     }
@@ -71,11 +76,11 @@ int main() {
     cout << "Вершина C: (" << x3 << ", " << y3 << ")" << endl;
     
     // Выполняем операцию
-    if (w == P) {
+    if (w == 1) {
         float P = Pv(x1, y1, x2, y2, x3, y3);
         cout << "Периметр треугольника: " << P << endl;
     } 
-    else if (w == S) {
+    else if (w == 2) {
         float S = Sv(x1, y1, x2, y2, x3, y3);
         cout << "Площадь треугольника: " << S << endl;
     }
