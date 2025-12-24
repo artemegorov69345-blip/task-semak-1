@@ -19,8 +19,8 @@ double vY(double x) {
 * @return сумму ряда с заданной точностью
 */
 double vS(double x, double eps) {
-    double s = 0;          // сумма ряда
-    double a;              // текущий элемент ряда
+    double s = 0.0;          // сумма ряда
+    double a = 0.0;              // текущий элемент ряда
     int n = 1;             // номер элемента
     double t = 1.0 + x;    // (1+x)
     double t2 = t * t;     // (1+x)^2
