@@ -3,14 +3,8 @@
 #include <iomanip>
 using namespace std;
 
-/**
-* @brief Вычисляет значение функции y = 3x - 14 + e^x - e^(-x)
-* @param x - входное значение
-* @return значение функции y в точке x
-*/
-double vY(double x) {
-    return 3 * x - 14 + exp(x) - exp(-x);
-}
+// Объявление функции 
+double vY(double x);
 
 /**
 * @brief Основная функция программы
@@ -117,4 +111,13 @@ int main() {
     cout << "+-------------+-------------+" << endl;
     
     return 0;
+}
+
+/**
+* @brief Вычисляет значение функции y = 3x - 14 + e^x - e^(-x)
+* @param x - входное значение
+* @return значение функции y в точке x
+*/
+double vY(double x) {
+    return 3 * x - 14 + exp(x) - exp(-x);
 }
