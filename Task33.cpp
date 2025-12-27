@@ -1,113 +1,198 @@
 #include <iostream>
 #include <cmath>
 #include <iomanip>
+#include <limits>
+
 using namespace std;
 
-// Объявления функций (прототипы)
-double vY(double x);
-double vS(double x, double eps);
+// Объявления функций
+/**
+* @brief Проверяет правильность ввода числового значения
+* @param value - ссылка на переменную для сохранения значения
+* @return true если ввод корректен, false если есть ошибка
+*/
+bool checkValue(double &value);
 
 /**
-* @brief Основная функция программы
-* @return 0 при успешном выполнении
+* @brief Проверяет положительное значение
+* @param value - проверяемое значение
+* @param paramName - название параметра для сообщения об ошибке
+* @return true если значение положительное, false в противном случае
 */
-int main() {
-    // Константы из задания
-    const double a = 0.1;      // начало интервала
-    const double b = 0.8;      // конец интервала  
-    const double h = 0.1;      // шаг табулирования
-    const double eps = 0.00004; // точность 40×10^-5 = 0.00004
+bool checkPositive(double value, const string &paramName);
+
+/**
+* @brief Проверяет корректность интервала
+* @param start - начало интервала
+* @param end - конец интервала
+* @return true если интервал корректен, false в противном случае
+*/
+bool checkInterval(double start, double end);
+
+/**
+* @brief Вычисляет функцию y = (e^a - e^(-a)) / 2 (гиперболический синус)
+* @param a значение переменной a
+* @return Возвращает значение функции
+*/
+double getFunc(double a);
+
+/**
+* @brief Рассчитывает значение следующего элемента ряда
+* @param previous предыдущий элемент ряда
+* @param a значение переменной a
+* @param n индекс элемента последовательности
+* @return Возвращает значение следующего элемента ряда
+*/
+double nextElement(double previous, double a, int n);
+
+/**
+* @brief Рассчитывает значение суммы ряда с точностью до epsilon
+* @param a значение переменной a
+* @param eps значение величины точности
+* @return Возвращает значение суммы ряда
+*/
+double getSum(double a, double eps);
+
+/**
+* @brief Рекуррентное вычисление суммы ряда
+* @param a значение переменной a
+* @param eps точность вычислений
+* @param maxIterations максимальное количество итераций
+* @return значение суммы ряда
+*/
+double getRecurent(double a, double eps, int maxIterations = 1000);
+
+/**
+ * @brief Точка входа в программу
+ * @return Возвращает 0 в случае успеха
+ */
+int main()
+{
+    const double eps = 1e-4;  // Точность 10^-4
     
-    cout << "Табулирование функции и суммы ряда" << endl;
-    cout << "Функция: y = ln(1/(2 + 2x + x^2))" << endl;
-    cout << "Ряд: S = -(1+x)^2 + (1+x)^4/2 - (1+x)^6/3 + ..." << endl;
-    cout << "Интервал: [" << a << ", " << b << "]" << endl;
-    cout << "Шаг: " << h << endl;
-    cout << "Точность: " << eps << endl;
+    cout << "=== Вычисление гиперболического синуса sh(x) и его разложения в ряд ===" << endl;
+    
+    // Ввод начала интервала
+    double iStart;
+    cout << "Введите начало интервала: ";
+    while (!checkValue(iStart)) {
+        cout << "Ошибка! Нужно вводить только числа! Попробуйте снова: ";
+    }
+    
+    // Ввод конца интервала
+    double iEnd;
+    cout << "Введите конец интервала: ";
+    while (!checkValue(iEnd)) {
+        cout << "Ошибка! Нужно вводить только числа! Попробуйте снова: ";
+    }
+    
+    // Проверка интервала
+    if (!checkInterval(iStart, iEnd)) {
+        cout << "Ошибка! Конец интервала должен быть больше начала!" << endl;
+        return 1;
+    }
+    
+    // Ввод шага
+    double step;
+    cout << "Введите значение шага: ";
+    while (!checkValue(step)) {
+        cout << "Ошибка! Нужно вводить только числа! Попробуйте снова: ";
+    }
+    
+    // Проверка шага
+    if (!checkPositive(step, "Шаг")) {
+        return 1;
+    }
     
     // Выводим заголовок таблицы
-    cout << "+-------------+---------------------+---------------------+-----------------+" << endl;
-    cout << "|     x       |    Функция y(x)     |   Сумма ряда S(x)   |   Разность      |" << endl;
-    cout << "+-------------+---------------------+---------------------+-----------------+" << endl;
+    cout << endl;
+    cout << "Таблица значений:" << endl;
+    cout << "+----------+---------------+---------------+---------------+" << endl;
+    cout << "|    a     |     f(a)      |     S(a)      |   Разность    |" << endl;
+    cout << "+----------+---------------+---------------+---------------+" << endl;
     
-    // Табулирование
+    // Табулирование функции
     cout << fixed << setprecision(6);
-    for (double x = a; x <= b + h/1000; x += h) {
-        double y = vY(x);
-        double s = vS(x, eps);
-        double r = fabs(y - s);
+    for (double a = iStart; a <= iEnd + numeric_limits<double>::epsilon(); a += step) {
+        double funcValue = getFunc(a);
+        double sumValue = getSum(a, eps);
+        double diff = fabs(funcValue - sumValue);
         
-        cout << "| " << setw(11) << x << " | ";
-        cout << setw(19) << y << " | ";
-        cout << setw(19) << s << " | ";
-        cout << setw(15) << r << " |" << endl;
+        cout << "| " << setw(8) << setprecision(2) << a << " | "
+             << setw(13) << funcValue << " | "
+             << setw(13) << sumValue << " | "
+             << setw(13) << diff << " |" << endl;
     }
     
-    cout << "+-------------+---------------------+---------------------+-----------------+" << endl;
+    cout << "+----------+---------------+---------------+---------------+" << endl;
     
-    // Проверка точности
-    cout << "Проверка точности" << endl;
-    cout << "Максимальная допустимая погрешность: " << eps << endl;
-    
-    double max_r = 0;
-    double x_max = a;
-    
-    for (double x = a; x <= b + h/1000; x += h) {
-        double y = vY(x);
-        double s = vS(x, eps);
-        double r = fabs(y - s);
-        
-        if (r > max_r) {
-            max_r = r;
-            x_max = x;
-        }
-    }
-    
-    cout << "Максимальная разность: " << max_r << " при x = " << x_max << endl;
-    
-    if (max_r <= eps) {
-        cout << "Точность достигнута!" << endl;
-    } else {
-        cout << "Точность не достигнута!" << endl;
-    }
+    // Демонстрация рекуррентного метода
+    cout << endl << "Демонстрация рекуррентного метода:" << endl;
+    double testValue = (iStart + iEnd) / 2.0;
+    cout << "Значение a = " << testValue << endl;
+    cout << "Точное значение f(a) = " << getFunc(testValue) << endl;
+    cout << "Сумма ряда S(a) = " << getSum(testValue, eps) << endl;
+    cout << "Рекуррентное вычисление = " << getRecurent(testValue, eps) << endl;
     
     return 0;
 }
 
-/**
-* @brief Вычисляет значение функции y = ln(1/(2 + 2x + x^2))
-* @param x - входное значение
-* @return значение функции в точке x
-*/
-double vY(double x) {
-    return log(1.0 / (2.0 + 2.0*x + x*x));
+bool checkValue(double &value) {
+    cin >> value;
+    if (cin.fail()) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        return false;
+    }
+    return true;
 }
 
-/**
-* @brief Вычисляет сумму ряда для функции ln(1/(2 + 2x + x^2))
-* @param x - входное значение
-* @param eps - точность вычисления
-* @return сумму ряда с заданной точностью
-*/
-double vS(double x, double eps) {
-    double s = 0.0;          // сумма ряда
-    double a = 0.0;          // текущий элемент ряда
-    int n = 1;               // номер элемента
-    double t = 1.0 + x;      // (1+x)
-    double t2 = t * t;       // (1+x)^2
+bool checkPositive(double value, const string &paramName) {
+    if (value <= 0) {
+        cout << "Ошибка! " << paramName << " должен быть положительным числом!" << endl;
+        return false;
+    }
+    return true;
+}
+
+bool checkInterval(double start, double end) {
+    if (end <= start) {
+        return false;
+    }
+    return true;
+}
+
+double getFunc(double a) {
+    return (exp(a) - exp(-a)) / 2.0;
+}
+
+double nextElement(double previous, double a, int n) {
+    return previous * (a * a) / ((2.0 * n) * (2.0 * n + 1.0));
+}
+
+double getSum(double a, double eps) {
+    // Первый элемент ряда для гиперболического синуса: a
+    double element = a;
+    double sum = element;
+    int n = 1;
     
-    // Первый элемент ряда: -(1+x)^2
-    a = -t2;
-    s = a;
-    n = 2;
-    
-    // Вычисляем остальные элементы пока |a| >= eps
-    do {
-        // Рекуррентная формула: следующий элемент = предыдущий * (-(1+x)^2) * (n-1)/n
-        a = a * (-t2) * (n-1) / n;
-        s += a;
+    while (fabs(element) > eps && n < 1000) {
+        element = nextElement(element, a, n);
+        sum += element;
         n++;
-    } while (fabs(a) >= eps);
+    }
     
-    return s;
+    return sum;
+}
+
+double getRecurent(double a, double eps, int maxIterations) {
+    double sum = a;  // Первый элемент
+    double element = a;
+    
+    for (int n = 1; n < maxIterations && fabs(element) > eps; n++) {
+        element = element * (a * a) / ((2.0 * n) * (2.0 * n + 1.0));
+        sum += element;
+    }
+    
+    return sum;
 }
