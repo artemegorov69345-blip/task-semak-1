@@ -37,15 +37,6 @@ bool checkInterval(double start, double end);
 double getFunc(double a);
 
 /**
-* @brief Рассчитывает значение следующего элемента ряда
-* @param previous предыдущий элемент ряда
-* @param a значение переменной a
-* @param n индекс элемента последовательности
-* @return Возвращает значение следующего элемента ряда
-*/
-double nextElement(double previous, double a, int n);
-
-/**
 * @brief Рассчитывает значение суммы ряда с точностью до epsilon
 * @param a значение переменной a
 * @param eps значение величины точности
@@ -166,10 +157,6 @@ double getFunc(double a) {
     return (exp(a) - exp(-a)) / 2.0;
 }
 
-double nextElement(double previous, double a, int n) {
-    return previous * (a * a) / ((2.0 * n) * (2.0 * n + 1.0));
-}
-
 double getSum(double a, double eps) {
     // Первый элемент ряда для гиперболического синуса: a
     double element = a;
@@ -177,7 +164,9 @@ double getSum(double a, double eps) {
     int n = 1;
     
     while (fabs(element) > eps && n < 1000) {
-        element = nextElement(element, a, n);
+        // ВМЕСТО ВЫЗОВА nextElement - РЕКУРРЕНТНОЕ ВЫРАЖЕНИЕ ПРЯМО ЗДЕСЬ
+        // element = nextElement(element, a, n);
+        element = element * (a * a) / ((2.0 * n) * (2.0 * n + 1.0));
         sum += element;
         n++;
     }
