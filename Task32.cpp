@@ -44,91 +44,6 @@ bool checkNonNegative(int value, const string &paramName);
 double getRecurentSum(int n, double fact_k, double fact_k1);
 
 /**
-* @brief Вычисляет член ряда для заданного k
-* @param k - номер члена ряда
-* @param fact_k - факториал k (k!)
-* @param fact_k1 - факториал k+1 ((k+1)!)
-* @return значение члена ряда для заданного k
-*/
-double calculateTerm(int k, double fact_k, double fact_k1) {
-    double denominator = fact_k * fact_k1;
-    if (k % 2 == 0) {
-        return 1.0 / denominator;
-    } else {
-        return -1.0 / denominator;
-    }
-}
-
-/**
-* @brief Проверяет правильность ввода числового значения
-* @param value - ссылка на переменную для сохранения значения
-* @return true если ввод корректен, false если есть ошибка
-*/
-bool checkValue(double &value) {
-    cin >> value;
-    if (cin.fail()) {
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        return false;
-    }
-    return true;
-}
-
-/**
-* @brief Проверяет правильность ввода целого числового значения
-* @param value - ссылка на переменную для сохранения значения
-* @return true если ввод корректен, false если есть ошибка
-*/
-bool checkIntValue(int &value) {
-    cin >> value;
-    if (cin.fail()) {
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        return false;
-    }
-    return true;
-}
-
-/**
-* @brief Проверяет является ли значение неотрицательным
-* @param value - проверяемое значение
-* @param paramName - название параметра для сообщения об ошибке
-* @return true если значение >= 0, false в противном случае
-*/
-bool checkNonNegative(int value, const string &paramName) {
-    if (value < 0) {
-        cout << "Ошибка! " << paramName << " должно быть неотрицательным целым числом!" << endl;
-        return false;
-    }
-    return true;
-}
-
-/**
-* @brief Вычисляет сумму ряда рекуррентным методом
-* @param n - количество членов ряда
-* @param fact_k - начальный факториал для k
-* @param fact_k1 - начальный факториал для k+1
-* @return сумма n членов ряда, вычисленная рекуррентно
-*/
-double getRecurentSum(int n, double fact_k, double fact_k1) {
-    double sum = 0.0;
-    double current_fact_k = fact_k;
-    double current_fact_k1 = fact_k1;
-    
-    for (int k = 0; k <= n; k++) {
-        double term = calculateTerm(k, current_fact_k, current_fact_k1);
-        sum += term;
-        
-        if (k < n) {
-            current_fact_k *= (k + 1);
-            current_fact_k1 *= (k + 2);
-        }
-    }
-    
-    return sum;
-}
-
-/**
 * @brief Основная функция программы
 * @details Программа вычисляет сумму ряда: sum(k=0 to n) [(-1)^k / (k! * (k+1)!)]
 *          Часть a: сумма первых n членов
@@ -237,4 +152,89 @@ int main() {
     cout << "Количество учтенных элементов: " << k << endl;
     
     return 0;
+}
+
+/**
+* @brief Вычисляет член ряда для заданного k
+* @param k - номер члена ряда
+* @param fact_k - факториал k (k!)
+* @param fact_k1 - факториал k+1 ((k+1)!)
+* @return значение члена ряда для заданного k
+*/
+double calculateTerm(int k, double fact_k, double fact_k1) {
+    double denominator = fact_k * fact_k1;
+    if (k % 2 == 0) {
+        return 1.0 / denominator;
+    } else {
+        return -1.0 / denominator;
+    }
+}
+
+/**
+* @brief Проверяет правильность ввода числового значения
+* @param value - ссылка на переменную для сохранения значения
+* @return true если ввод корректен, false если есть ошибка
+*/
+bool checkValue(double &value) {
+    cin >> value;
+    if (cin.fail()) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        return false;
+    }
+    return true;
+}
+
+/**
+* @brief Проверяет правильность ввода целого числового значения
+* @param value - ссылка на переменную для сохранения значения
+* @return true если ввод корректен, false если есть ошибка
+*/
+bool checkIntValue(int &value) {
+    cin >> value;
+    if (cin.fail()) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        return false;
+    }
+    return true;
+}
+
+/**
+* @brief Проверяет является ли значение неотрицательным
+* @param value - проверяемое значение
+* @param paramName - название параметра для сообщения об ошибке
+* @return true если значение >= 0, false в противном случае
+*/
+bool checkNonNegative(int value, const string &paramName) {
+    if (value < 0) {
+        cout << "Ошибка! " << paramName << " должно быть неотрицательным целым числом!" << endl;
+        return false;
+    }
+    return true;
+}
+
+/**
+* @brief Вычисляет сумму ряда рекуррентным методом
+* @param n - количество членов ряда
+* @param fact_k - начальный факториал для k
+* @param fact_k1 - начальный факториал для k+1
+* @return сумма n членов ряда, вычисленная рекуррентно
+*/
+double getRecurentSum(int n, double fact_k, double fact_k1) {
+    double sum = 0.0;
+    double current_fact_k = fact_k;
+    double current_fact_k1 = fact_k1;
+    
+    for (int k = 0; k <= n; k++) {
+        double term = calculateTerm(k, current_fact_k, current_fact_k1);
+        sum += term;
+        
+        if (k < n) {
+            current_fact_k *= (k + 1);
+            current_fact_k1 *= (k + 2);
+        }
+    }
+    
+    return sum;
 }
