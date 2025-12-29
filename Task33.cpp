@@ -14,6 +14,13 @@ using namespace std;
 bool checkValue(double &value);
 
 /**
+* @brief Проверяет правильность ввода целого числового значения
+* @param value - ссылка на переменную для сохранения значения
+* @return true если ввод корректен, false если есть ошибка
+*/
+bool checkIntValue(int &value);
+
+/**
 * @brief Проверяет положительное значение
 * @param value - проверяемое значение
 * @param paramName - название параметра для сообщения об ошибке
@@ -68,76 +75,116 @@ double getRecurent(double a, double eps, int maxIterations = 1000);
  */
 int main()
 {
-    const double eps = 1e-4;  // Точность 10^-4
+    const double eps = 1e-4;  // Точность 10^-4 для вычисления суммы ряда
     
     cout << "=== Вычисление гиперболического синуса sh(x) и его разложения в ряд ===" << endl;
     
-    // Ввод начала интервала
+    // Ввод параметров для табулирования функции
+    // iStart - переменная для хранения начала интервала табулирования
     double iStart;
-    cout << "Введите начало интервала: ";
+    cout << "Введите начало интервала табулирования: ";
     while (!checkValue(iStart)) {
         cout << "Ошибка! Нужно вводить только числа! Попробуйте снова: ";
     }
     
-    // Ввод конца интервала
+    // iEnd - переменная для хранения конца интервала табулирования
     double iEnd;
-    cout << "Введите конец интервала: ";
+    cout << "Введите конец интервала табулирования: ";
     while (!checkValue(iEnd)) {
         cout << "Ошибка! Нужно вводить только числа! Попробуйте снова: ";
     }
     
-    // Проверка интервала
+    // Проверка корректности интервала: конец должен быть больше начала
     if (!checkInterval(iStart, iEnd)) {
         cout << "Ошибка! Конец интервала должен быть больше начала!" << endl;
         return 1;
     }
     
-    // Ввод шага
-    double step;
-    cout << "Введите значение шага: ";
-    while (!checkValue(step)) {
-        cout << "Ошибка! Нужно вводить только числа! Попробуйте снова: ";
+    // Ввод шага табулирования - количество точек между значениями
+    // Шаг должен быть целым числом согласно требованию преподавателя
+    int stepCount;
+    cout << "Введите количество шагов (целое число): ";
+    while (!checkIntValue(stepCount)) {
+        cout << "Ошибка! Нужно вводить только целые числа! Попробуйте снова: ";
     }
     
-    // Проверка шага
-    if (!checkPositive(step, "Шаг")) {
+    // Проверка, что количество шагов положительное
+    if (!checkPositive(stepCount, "Количество шагов")) {
         return 1;
     }
     
+    // Вычисляем фактический шаг как расстояние между точками
+    double actualStep = (iEnd - iStart) / stepCount;
+    
     // Выводим заголовок таблицы
     cout << endl;
-    cout << "Таблица значений:" << endl;
+    cout << "Таблица значений функции sh(x) = (e^x - e^(-x))/2 и ее разложения в ряд Тейлора:" << endl;
+    cout << "Интервал: [" << iStart << ", " << iEnd << "], шагов: " << stepCount << endl;
     cout << "+----------+---------------+---------------+---------------+" << endl;
-    cout << "|    a     |     f(a)      |     S(a)      |   Разность    |" << endl;
+    cout << "|     x    |    sh(x)      |    S(x)       |    |f-S|     |" << endl;
     cout << "+----------+---------------+---------------+---------------+" << endl;
     
-    // Табулирование функции
+    // Табулирование функции - вычисление значений для каждого x в интервале
     cout << fixed << setprecision(6);
-    for (double a = iStart; a <= iEnd + numeric_limits<double>::epsilon(); a += step) {
-        double funcValue = getFunc(a);
-        double sumValue = getSum(a, eps);
-        double diff = fabs(funcValue - sumValue);
+    int pointsCalculated = 0;
+    
+    for (int i = 0; i <= stepCount; i++) {
+        // Вычисляем текущее значение x
+        double a = iStart + i * actualStep;
+        double funcValue = getFunc(a);       // Точное значение функции
+        double sumValue = getSum(a, eps);    // Приближенное значение через ряд
+        double diff = fabs(funcValue - sumValue);  // Разность между точным и приближенным
         
-        cout << "| " << setw(8) << setprecision(2) << a << " | "
+        // Вывод строки таблицы с форматированием
+        cout << "| " << setw(8) << a << " | "
              << setw(13) << funcValue << " | "
              << setw(13) << sumValue << " | "
              << setw(13) << diff << " |" << endl;
+        
+        pointsCalculated++;
     }
     
     cout << "+----------+---------------+---------------+---------------+" << endl;
+    cout << "Всего вычислено точек: " << pointsCalculated << endl;
     
-    // Демонстрация рекуррентного метода
-    cout << endl << "Демонстрация рекуррентного метода:" << endl;
-    double testValue = (iStart + iEnd) / 2.0;
-    cout << "Значение a = " << testValue << endl;
-    cout << "Точное значение f(a) = " << getFunc(testValue) << endl;
-    cout << "Сумма ряда S(a) = " << getSum(testValue, eps) << endl;
+    // Демонстрация рекуррентного метода вычисления
+    cout << endl << "Демонстрация рекуррентного метода вычисления суммы ряда:" << endl;
+    double testValue = (iStart + iEnd) / 2.0;  // Среднее значение интервала для теста
+    cout << "Тестовое значение x = " << testValue << endl;
+    cout << "Точное значение sh(" << testValue << ") = " << getFunc(testValue) << endl;
+    cout << "Сумма ряда с точностью " << eps << " = " << getSum(testValue, eps) << endl;
     cout << "Рекуррентное вычисление = " << getRecurent(testValue, eps) << endl;
     
     return 0;
 }
 
+// Реализации функций (должны быть после main)
+
+/**
+* @brief Проверяет правильность ввода числового значения
+* @param value - ссылка на переменную для сохранения значения
+* @return true если ввод корректен, false если есть ошибка
+* @details Функция пытается считать значение из потока ввода.
+*          Если ввод успешен, возвращает true.
+*          Если возникает ошибка (например, введены не числа),
+*          очищает флаги ошибок и буфер ввода, возвращает false.
+*/
 bool checkValue(double &value) {
+    cin >> value;
+    if (cin.fail()) {
+        cin.clear();  // Сбрасываем флаги ошибок
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Очищаем буфер ввода
+        return false;  // Возвращаем false - ввод некорректен
+    }
+    return true;  // Возвращаем true - ввод корректен
+}
+
+/**
+* @brief Проверяет правильность ввода целого числового значения
+* @param value - ссылка на переменную для сохранения значения
+* @return true если ввод корректен, false если есть ошибка
+*/
+bool checkIntValue(int &value) {
     cin >> value;
     if (cin.fail()) {
         cin.clear();
@@ -147,6 +194,12 @@ bool checkValue(double &value) {
     return true;
 }
 
+/**
+* @brief Проверяет положительное значение
+* @param value - проверяемое значение
+* @param paramName - название параметра для сообщения об ошибке
+* @return true если значение положительное, false в противном случае
+*/
 bool checkPositive(double value, const string &paramName) {
     if (value <= 0) {
         cout << "Ошибка! " << paramName << " должен быть положительным числом!" << endl;
