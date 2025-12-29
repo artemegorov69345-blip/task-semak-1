@@ -3,6 +3,7 @@
 #include <ctime>
 #include <vector>
 #include <cmath>
+#include <limits>
 
 using namespace std;
 
@@ -13,10 +14,9 @@ enum Operation {
 
 /**
 * @brief Проверяет правильность ввода целого числа
-* @param value - переменная, куда сохранить число
-* @return true если ввод правильный, false если ошибка
+* @return считанное число, если ввод правильный, иначе программа завершается
 */
-bool checkValue(int &value);
+int checkValue();
 
 /**
 * @brief Проверяет, положительное ли число
@@ -24,7 +24,7 @@ bool checkValue(int &value);
 * @param paramName - название параметра (для сообщения об ошибке)
 * @return true если число положительное, false если нет
 */
-bool checkPositive(int value, const string &paramName);
+bool checkPositive(const int value, const string &paramName);
 
 /**
 * @brief Проверяет правильность границ для случайных чисел
@@ -32,14 +32,14 @@ bool checkPositive(int value, const string &paramName);
 * @param max - максимальное значение
 * @return true если min <= max, false если наоборот
 */
-bool checkRandomBounds(int min, int max);
+bool checkRandomBounds(const int min, const int max);
 
 /**
 * @brief Создает вектор (динамический массив) заданного размера
 * @param n - размер массива
 * @return готовый вектор нужного размера
 */
-vector<int> createArray(size_t n);
+vector<int> createArray(const size_t n);
 
 /**
 * @brief Выводит массив на экран
@@ -60,13 +60,6 @@ void fillArrayManually(vector<int>& arr);
 void fillArrayRandomly(vector<int>& arr);
 
 /**
-* @brief Создает копию массива
-* @param arr - исходный массив
-* @return новая копия массива
-*/
-vector<int> copyArray(const vector<int>& arr);
-
-/**
 * @brief Заменяет последний элемент, который делится на 3, на 0
 * @param arr - массив для изменения
 */
@@ -85,7 +78,7 @@ size_t countEvenNumbers(const vector<int>& arr);
 * @param k - число, которое нужно вставлять
 * @return новый массив с вставленными числами K
 */
-vector<int> insertKAfterEven(const vector<int>& arr, int k);
+vector<int> insertKAfterEven(const vector<int>& arr, const int k);
 
 /**
 * @brief Создает массив M из массива P по заданному правилу
@@ -101,7 +94,7 @@ vector<int> createMfromP(const vector<int>& P);
 * @param min - минимальное значение
 * @param max - максимальное значение
 */
-void getRecurent(vector<int>& arr, size_t index, int min, int max);
+void getRecurent(vector<int>& arr, const size_t index, const int min, const int max);
 
 
 /**
@@ -115,29 +108,20 @@ int main() {
     
     cout << "=== ЛАБОРАТОРНАЯ РАБОТА: ОПЕРАЦИИ С МАССИВАМИ ===" << endl;
     
-    int arraySize;
+    int arraySize = 0;
     cout << "Введите размер массива (положительное число): ";
-    
-    // Используем checkValue для проверки ввода
-    // Цикл будет работать, пока пользователь не введет правильное число
-    while (!checkValue(arraySize)) {
-        cout << "Неправильный ввод! Нужно ввести целое число. Попробуйте снова: ";
-    }
+    arraySize = checkValue();
     
     // Проверяем, что размер положительный
     if (!checkPositive(arraySize, "Размер массива")) {
         return 1;
     }
     
-    size_t n = arraySize;  // Преобразуем в size_t для использования с векторами
+    size_t n = static_cast<size_t>(arraySize);  // Преобразуем в size_t для использования с векторами
     
-    int k;
+    int k = 0;
     cout << "Введите число K (будет вставляться после четных чисел): ";
-    
-    // Проверяем ввод K (может быть любым целым числом)
-    while (!checkValue(k)) {
-        cout << "Неправильный ввод! Нужно ввести целое число. Попробуйте снова: ";
-    }
+    k = checkValue();
     
     cout << "Создаем массив размера " << n << "..." << endl;
     vector<int> P = createArray(n);  // P - исходный массив
@@ -147,10 +131,7 @@ int main() {
     cout << FILL_RANDOMLY << " - Заполнить случайными числами" << endl;
     cout << "Ваш выбор: ";
     
-    int choice;
-    while (!checkValue(choice)) {
-        cout << "Неправильный ввод! Введите 0 или 1: ";
-    }
+    int choice = checkValue();
     
     // Обрабатываем выбор пользователя
     switch(choice) {
@@ -179,7 +160,7 @@ int main() {
     
     // Создаем копию массива и заменяем последний элемент, кратный 3, на 0
     cout << "Замена последнего элемента, делящегося на 3, на 0:" << endl;
-    vector<int> P_copy = copyArray(P);  // Создаем копию, чтобы не портить оригинал
+    vector<int> P_copy(P);  // Создаем копию, чтобы не портить оригинал
     replaceLastMultipleOfThree(P_copy);
     cout << "Результат: ";
     printArray(P_copy);
@@ -205,7 +186,7 @@ int main() {
     cout << "=== ДОПОЛНИТЕЛЬНО: РЕКУРРЕНТНЫЙ МЕТОД ===" << endl;
     cout << "Создаем маленький массив (6 элементов) и заполняем рекурсивно:" << endl;
     
-    vector<int> recurentArray = createArray(6);
+    vector<int> recurentArray(6);
     // Заполняем числами от -50 до 50 рекурсивно
     getRecurent(recurentArray, 0, -50, 50);
     
@@ -219,30 +200,30 @@ int main() {
 
 /**
  * Функция checkValue проверяет, правильно ли пользователь ввел целое число.
- * Если ввод содержит ошибку (например, буквы), функция очищает поток
- * и возвращает false, чтобы можно было запросить ввод снова.
+ * Если ввод содержит ошибку, программа завершается.
+ * @return считанное целое число
  */
-bool checkValue(int &value) {
+int checkValue() {
+    int value;
     cin >> value;  // Пытаемся считать число из потока ввода
     
     // Проверяем, не произошла ли ошибка (например, ввели текст вместо числа)
     if (cin.fail()) {
-        cin.clear();  // Сбрасываем флаги ошибок потока
-        // Удаляем все оставшиеся в потоке символы до конца строки
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        return false;  // Сообщаем, что ввод не удался
+        cout << "Ошибка ввода! Программа завершена." << endl;
+        exit(1);
     }
     
-    // Если все хорошо, очищаем оставшийся символ перевода строки
+    // Очищаем буфер ввода
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    return true;  // Ввод успешен
+    return value;
 }
 
 /**
  * Функция checkPositive проверяет, является ли число положительным.
  * Используется для проверки размера массива (размер не может быть 0 или отрицательным).
+ * @return true если число положительное, false если нет
  */
-bool checkPositive(int value, const string &paramName) {
+bool checkPositive(const int value, const string &paramName) {
     if (value <= 0) {
         cout << "Ошибка! Параметр '" << paramName << "' должен быть положительным числом!" << endl;
         return false;
@@ -253,8 +234,9 @@ bool checkPositive(int value, const string &paramName) {
 /**
  * Функция checkRandomBounds проверяет корректность границ для случайных чисел.
  * Минимальное значение не должно быть больше максимального.
+ * @return true если границы корректны, false если нет
  */
-bool checkRandomBounds(int min, int max) {
+bool checkRandomBounds(const int min, const int max) {
     if (min > max) {
         cout << "Ошибка! Минимальное значение (" << min << ") не может быть больше максимального (" << max << ")!" << endl;
         return false;
@@ -265,8 +247,9 @@ bool checkRandomBounds(int min, int max) {
 /**
  * Функция createArray создает вектор (динамический массив в C++) заданного размера.
  * Вектор сам управляет памятью, не нужно вызывать malloc/free.
+ * @return вектор заданного размера
  */
-vector<int> createArray(size_t n) {
+vector<int> createArray(const size_t n) {
     return vector<int>(n);  // Создаем вектор из n элементов
 }
 
@@ -295,7 +278,7 @@ void printArray(const vector<int>& arr) {
 
 /**
  * Функция fillArrayManually позволяет пользователю вручную ввести
- * все элементы массива. Для каждого элемента проверяем ввод с помощью checkValue.
+ * все элементы массива.
  */
 void fillArrayManually(vector<int>& arr) {
     cout << "Вам нужно ввести " << arr.size() << " чисел:" << endl;
@@ -303,11 +286,7 @@ void fillArrayManually(vector<int>& arr) {
     // Проходим по всем позициям массива
     for (size_t i = 0; i < arr.size(); i++) {
         cout << "Элемент " << i + 1 << " из " << arr.size() << ": ";
-        
-        // Используем checkValue в цикле, чтобы гарантировать правильный ввод
-        while (!checkValue(arr[i])) {
-            cout << "Неправильный ввод! Введите целое число: ";
-        }
+        arr[i] = checkValue();
     }
 }
 
@@ -320,15 +299,11 @@ void fillArrayRandomly(vector<int>& arr) {
     
     // Запрашиваем минимальное значение
     cout << "Введите минимальное значение для случайных чисел: ";
-    while (!checkValue(minValue)) {
-        cout << "Неправильный ввод! Введите целое число: ";
-    }
+    minValue = checkValue();
     
     // Запрашиваем максимальное значение
     cout << "Введите максимальное значение для случайных чисел: ";
-    while (!checkValue(maxValue)) {
-        cout << "Неправильный ввод! Введите целое число: ";
-    }
+    maxValue = checkValue();
     
     // Проверяем корректность диапазона
     if (!checkRandomBounds(minValue, maxValue)) {
@@ -342,14 +317,6 @@ void fillArrayRandomly(vector<int>& arr) {
     }
     
     cout << "Массив заполнен случайными числами от " << minValue << " до " << maxValue << endl;
-}
-
-/**
- * Функция copyArray создает точную копию массива.
- * В C++ это делается очень просто с помощью конструктора копирования вектора.
- */
-vector<int> copyArray(const vector<int>& arr) {
-    return vector<int>(arr);  // Создаем и возвращаем копию
 }
 
 /**
@@ -383,6 +350,7 @@ void replaceLastMultipleOfThree(vector<int>& arr) {
 /**
  * Функция countEvenNumbers подсчитывает количество четных чисел в массиве.
  * Четное число - это число, которое делится на 2 без остатка.
+ * @return количество четных чисел
  */
 size_t countEvenNumbers(const vector<int>& arr) {
     size_t count = 0;  // Счетчик четных чисел
@@ -401,8 +369,9 @@ size_t countEvenNumbers(const vector<int>& arr) {
 /**
  * Функция insertKAfterEven создает новый массив, в который копирует
  * все элементы исходного массива, а после каждого четного числа вставляет число K.
+ * @return новый массив с вставленными числами K
  */
-vector<int> insertKAfterEven(const vector<int>& arr, int k) {
+vector<int> insertKAfterEven(const vector<int>& arr, const int k) {
     // Считаем, сколько будет четных чисел (столько раз вставим K)
     size_t evenCount = countEvenNumbers(arr);
     
@@ -434,6 +403,7 @@ vector<int> insertKAfterEven(const vector<int>& arr, int k) {
  * - M[0] = 0, M[n-1] = 0
  * - Если (i+1) делится на 4: M[i] = 4 * |P[i]|
  * - Иначе: M[i] = -P[i] * (i+1)
+ * @return новый массив M
  */
 vector<int> createMfromP(const vector<int>& P) {
     // Создаем массив M такого же размера, как P
@@ -465,7 +435,7 @@ vector<int> createMfromP(const vector<int>& P) {
  * Она заполняет массив рекурсивно, вызывая саму себя для каждого следующего элемента.
  * Это пример рекурсии - функции, которая вызывает сама себя.
  */
-void getRecurent(vector<int>& arr, size_t index, int min, int max) {
+void getRecurent(vector<int>& arr, const size_t index, const int min, const int max) {
     // Базовый случай рекурсии: если дошли до конца массива
     if (index >= arr.size()) {
         return;  // Завершаем рекурсию
