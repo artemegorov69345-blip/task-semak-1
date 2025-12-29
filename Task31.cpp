@@ -26,6 +26,14 @@ bool checkValue(double &value);
 bool checkPositive(double value, const string &paramName);
 
 /**
+* @brief Проверяет корректность интервала
+* @param start - начало интервала
+* @param end - конец интервала
+* @return true если интервал корректен, false в противном случае
+*/
+bool checkInterval(double start, double end);
+
+/**
 * @brief Вычисляет значение функции рекуррентным методом
 * @param x - начальное значение x
 * @param h - шаг изменения
@@ -33,59 +41,6 @@ bool checkPositive(double value, const string &paramName);
 * @return значение функции на n-ом шаге
 */
 double getRecurent(double x, double h, int n);
-
-/**
-* @brief Проверяет правильность ввода значения
-* @param value - ссылка на переменную для сохранения значения
-* @return true если ввод корректен, false если есть ошибка
-*/
-bool checkValue(double &value) {
-    cin >> value;
-    if (cin.fail()) {
-        cin.clear(); // Сбрасываем флаг ошибки
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Очищаем буфер
-        return false;
-    }
-    return true;
-}
-
-/**
-* @brief Проверяет положительное значение
-* @param value - проверяемое значение
-* @param paramName - название параметра для сообщения об ошибке
-* @return true если значение положительное, false в противном случае
-*/
-bool checkPositive(double value, const string &paramName) {
-    if (value <= 0) {
-        cout << "Ошибка! " << paramName << " должен быть положительным числом!" << endl;
-        return false;
-    }
-    return true;
-}
-
-/**
-* @brief Вычисляет значение функции рекуррентным методом
-* @param x - начальное значение x
-* @param h - шаг
-* @param n - количество итераций
-* @return значение функции на n-ом шаге
-*/
-double getRecurent(double x, double h, int n) {
-    double currentX = x;
-    for (int i = 0; i < n; i++) {
-        currentX += h;
-    }
-    return vY(currentX);
-}
-
-/**
-* @brief Вычисляет значение функции y = 3x - 14 + e^x - e^(-x)
-* @param x - входное значение
-* @return значение функции y в точке x
-*/
-double vY(double x) {
-    return 3 * x - 14 + exp(x) - exp(-x);
-}
 
 /**
 * @brief Основная функция программы
@@ -130,8 +85,7 @@ int main() {
         return 1;
     }
     
-    if (n > k) {
-        cout << "Ошибка! Начало интервала должно быть меньше или равно концу!" << endl;
+    if (!checkInterval(n, k)) {
         return 1;
     }
     
@@ -199,4 +153,71 @@ int main() {
     cout << "+-------------+-------------+" << endl;
     
     return 0;
+}
+
+/**
+* @brief Проверяет правильность ввода значения
+* @param value - ссылка на переменную для сохранения значения
+* @return true если ввод корректен, false если есть ошибка
+*/
+bool checkValue(double &value) {
+    cin >> value;
+    if (cin.fail()) {
+        cin.clear(); // Сбрасываем флаг ошибки
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Очищаем буфер
+        return false;
+    }
+    return true;
+}
+
+/**
+* @brief Проверяет положительное значение
+* @param value - проверяемое значение
+* @param paramName - название параметра для сообщения об ошибке
+* @return true если значение положительное, false в противном случае
+*/
+bool checkPositive(double value, const string &paramName) {
+    if (value <= 0) {
+        cout << "Ошибка! " << paramName << " должен быть положительным числом!" << endl;
+        return false;
+    }
+    return true;
+}
+
+/**
+* @brief Проверяет корректность интервала
+* @param start - начало интервала
+* @param end - конец интервала
+* @return true если интервал корректен, false в противном случае
+*/
+bool checkInterval(double start, double end) {
+    if (start > end) {
+        cout << "Ошибка! Начало интервала должно быть меньше или равно концу!" << endl;
+        return false;
+    }
+    return true;
+}
+
+/**
+* @brief Вычисляет значение функции рекуррентным методом
+* @param x - начальное значение x
+* @param h - шаг
+* @param n - количество итераций
+* @return значение функции на n-ом шаге
+*/
+double getRecurent(double x, double h, int n) {
+    double currentX = x;
+    for (int i = 0; i < n; i++) {
+        currentX += h;
+    }
+    return vY(currentX);
+}
+
+/**
+* @brief Вычисляет значение функции y = 3x - 14 + e^x - e^(-x)
+* @param x - входное значение
+* @return значение функции y в точке x
+*/
+double vY(double x) {
+    return 3 * x - 14 + exp(x) - exp(-x);
 }
