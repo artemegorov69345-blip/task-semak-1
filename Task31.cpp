@@ -5,6 +5,14 @@
 using namespace std;
 
 /**
+* @brief Сравнивает два числа с плавающей точкой с учетом погрешности
+* @param a - первое число
+* @param b - второе число
+* @return true если a <= b с учетом погрешности, false в противном случае
+*/
+bool isLessOrEqualWithEpsilon(const double a, const double b);
+
+/**
 * @brief Вычисляет значение функции y = 3x - 14 + e^x - e^(-x)
 * @param x - входное значение
 * @return значение функции y в точке x
@@ -105,32 +113,7 @@ int main() {
     cout << endl << "Таблица значений функции" << endl;
     
     // Табулирование функции
-    int t = 0;
-    double x = n;
-    
-    cout << fixed << setprecision(4);
-    
-    cout << "+-------------+-------------+" << endl;
-    cout << "|     x       |     y       |" << endl;
-    cout << "+-------------+-------------+" << endl;
-    
-    while (x <= k) {
-        t++;
-        double y = vY(x);
-        
-        cout << "| " << setw(11) << x << " | ";
-        
-        if (!isfinite(y)) {
-            cout << setw(11) << "Нет решения" << " |" << endl;
-        } else {
-            cout << setw(11) << y << " |" << endl;
-        }
-        
-        x += h;
-    }
-    
-    cout << "+-------------+-------------+" << endl;
-    cout << "Всего вычислено точек: " << t << endl;
+    printTable(n, k, h);
     
     // Демонстрация рекуррентного метода
     cout << endl << "Демонстрация рекуррентного метода:" << endl;
@@ -146,11 +129,36 @@ int main() {
 }
 
 /**
+* @brief Сравнивает два числа с плавающей точкой с учетом погрешности
+* @param a - первое число
+* @param b - второе число
+* @return true если a <= b с учетом погрешности, false в противном случае
+*/
+bool isLessOrEqualWithEpsilon(const double a, const double b) {
+    // Используем машинный эпсилон для double
+    const double epsilon = numeric_limits<double>::epsilon();
+    
+    // Для сравнения с учетом погрешности используем относительную ошибку
+    // Масштабируем epsilon в зависимости от величины чисел
+    const double absA = fabs(a);
+    const double absB = fabs(b);
+    const double maxAbs = max(absA, absB);
+    
+    // Если оба числа близки к нулю, используем абсолютную погрешность
+    if (maxAbs < 1.0) {
+        return a <= b + 10.0 * epsilon;
+    }
+    
+    // Иначе используем относительную погрешность
+    return a <= b + maxAbs * 10.0 * epsilon;
+}
+
+/**
 * @brief Проверяет правильность ввода значения
 * @param value - ссылка на переменную для сохранения значения
 * @return true если ввод корректен, false если есть ошибка
 */
-bool checkValue(double &value) {
+bool checkValue(const double &value) {
     cin >> value;
     if (cin.fail()) {
         cin.clear(); // Сбрасываем флаг ошибки
@@ -224,8 +232,14 @@ void printTable(const double start, const double end, const double step) {
     cout << "+-------------+-------------+" << endl;
     
     double x = start;
-    while (x <= end) {
+    int t = 0;
+    
+    cout << fixed << setprecision(4);
+    
+    while (isLessOrEqualWithEpsilon(x, end)) {
+        t++;
         double y = vY(x);
+        
         cout << "| " << setw(11) << x << " | ";
         
         if (!isfinite(y)) {
@@ -238,4 +252,5 @@ void printTable(const double start, const double end, const double step) {
     }
     
     cout << "+-------------+-------------+" << endl;
+    cout << "Всего вычислено точек: " << t << endl;
 }
