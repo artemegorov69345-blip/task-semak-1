@@ -204,7 +204,7 @@ int main() {
  * @return считанное целое число
  */
 int checkValue() {
-    int value;
+    int value = 0;
     cin >> value;  // Пытаемся считать число из потока ввода
     
     // Проверяем, не произошла ли ошибка (например, ввели текст вместо числа)
@@ -295,7 +295,7 @@ void fillArrayManually(vector<int>& arr) {
  * Сначала запрашивает у пользователя диапазон значений.
  */
 void fillArrayRandomly(vector<int>& arr) {
-    int minValue, maxValue;
+    int minValue = 0, maxValue = 0;
     
     // Запрашиваем минимальное значение
     cout << "Введите минимальное значение для случайных чисел: ";
