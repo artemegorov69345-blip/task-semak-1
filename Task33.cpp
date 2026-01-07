@@ -7,18 +7,16 @@ using namespace std;
 
 // Объявления функций
 /**
-* @brief Проверяет правильность ввода числового значения
-* @param value - ссылка на переменную для сохранения значения
-* @return true если ввод корректен, false если есть ошибка
+* @brief Считывает числовое значение, при ошибке ввода завершает программу
+* @return считанное значение
 */
-bool checkValue(double &value);
+double checkValue();
 
 /**
-* @brief Проверяет правильность ввода целого числового значения
-* @param value - ссылка на переменную для сохранения значения
-* @return true если ввод корректен, false если есть ошибка
+* @brief Считывает целое числовое значение, при ошибке ввода завершает программу
+* @return считанное целое значение
 */
-bool checkIntValue(int &value);
+int checkIntValue();
 
 /**
 * @brief Проверяет положительное значение
@@ -26,7 +24,7 @@ bool checkIntValue(int &value);
 * @param paramName - название параметра для сообщения об ошибке
 * @return true если значение положительное, false в противном случае
 */
-bool checkPositive(double value, const string &paramName);
+bool checkPositive(const double value, const string &paramName);
 
 /**
 * @brief Проверяет корректность интервала
@@ -34,14 +32,14 @@ bool checkPositive(double value, const string &paramName);
 * @param end - конец интервала
 * @return true если интервал корректен, false в противном случае
 */
-bool checkInterval(double start, double end);
+bool checkInterval(const double start, const double end);
 
 /**
 * @brief Вычисляет функцию y = (e^a - e^(-a)) / 2 (гиперболический синус)
 * @param a значение переменной a
 * @return Возвращает значение функции
 */
-double getFunc(double a);
+double getFunc(const double a);
 
 /**
 * @brief Рассчитывает значение следующего элемента ряда
@@ -50,7 +48,7 @@ double getFunc(double a);
 * @param n индекс элемента последовательности
 * @return Возвращает значение следующего элемента ряда
 */
-double nextElement(double previous, double a, int n);
+double nextElement(const double previous, const double a, const int n);
 
 /**
 * @brief Рассчитывает значение суммы ряда с точностью до epsilon
@@ -58,7 +56,7 @@ double nextElement(double previous, double a, int n);
 * @param eps значение величины точности
 * @return Возвращает значение суммы ряда
 */
-double getSum(double a, double eps);
+double getSum(const double a, const double eps);
 
 /**
 * @brief Рекуррентное вычисление суммы ряда
@@ -67,7 +65,7 @@ double getSum(double a, double eps);
 * @param maxIterations максимальное количество итераций
 * @return значение суммы ряда
 */
-double getRecurent(double a, double eps, int maxIterations = 1000);
+double getRecurent(const double a, const double eps, const int maxIterations = 1000);
 
 /**
  * @brief Точка входа в программу
@@ -80,19 +78,11 @@ int main()
     cout << "=== Вычисление гиперболического синуса sh(x) и его разложения в ряд ===" << endl;
     
     // Ввод параметров для табулирования функции
-    // iStart - переменная для хранения начала интервала табулирования
-    double iStart;
     cout << "Введите начало интервала табулирования: ";
-    while (!checkValue(iStart)) {
-        cout << "Ошибка! Нужно вводить только числа! Попробуйте снова: ";
-    }
+    double iStart = checkValue();
     
-    // iEnd - переменная для хранения конца интервала табулирования
-    double iEnd;
     cout << "Введите конец интервала табулирования: ";
-    while (!checkValue(iEnd)) {
-        cout << "Ошибка! Нужно вводить только числа! Попробуйте снова: ";
-    }
+    double iEnd = checkValue();
     
     // Проверка корректности интервала: конец должен быть больше начала
     if (!checkInterval(iStart, iEnd)) {
@@ -101,12 +91,8 @@ int main()
     }
     
     // Ввод шага табулирования - количество точек между значениями
-    // Шаг должен быть целым числом согласно требованию преподавателя
-    int stepCount;
     cout << "Введите количество шагов (целое число): ";
-    while (!checkIntValue(stepCount)) {
-        cout << "Ошибка! Нужно вводить только целые числа! Попробуйте снова: ";
-    }
+    int stepCount = checkIntValue();
     
     // Проверка, что количество шагов положительное
     if (!checkPositive(stepCount, "Количество шагов")) {
@@ -158,40 +144,36 @@ int main()
     return 0;
 }
 
-// Реализации функций (должны быть после main)
-
 /**
-* @brief Проверяет правильность ввода числового значения
-* @param value - ссылка на переменную для сохранения значения
-* @return true если ввод корректен, false если есть ошибка
-* @details Функция пытается считать значение из потока ввода.
-*          Если ввод успешен, возвращает true.
-*          Если возникает ошибка (например, введены не числа),
-*          очищает флаги ошибок и буфер ввода, возвращает false.
+* @brief Считывает числовое значение, при ошибке ввода завершает программу
+* @return считанное значение
 */
-bool checkValue(double &value) {
+double checkValue() {
+    double value = 0.0;  // Инициализация по умолчанию
     cin >> value;
     if (cin.fail()) {
-        cin.clear();  // Сбрасываем флаги ошибок
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Очищаем буфер ввода
-        return false;  // Возвращаем false - ввод некорректен
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max());
+        cout << "Ошибка ввода! Программа завершена." << endl;
+        exit(1);  // Завершение программы при ошибке ввода
     }
-    return true;  // Возвращаем true - ввод корректен
+    return value;
 }
 
 /**
-* @brief Проверяет правильность ввода целого числового значения
-* @param value - ссылка на переменную для сохранения значения
-* @return true если ввод корректен, false если есть ошибка
+* @brief Считывает целое числовое значение, при ошибке ввода завершает программу
+* @return считанное целое значение
 */
-bool checkIntValue(int &value) {
+int checkIntValue() {
+    int value = 0;  // Инициализация по умолчанию
     cin >> value;
     if (cin.fail()) {
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        return false;
+        cout << "Ошибка ввода! Программа завершена." << endl;
+        exit(1);  // Завершение программы при ошибке ввода
     }
-    return true;
+    return value;
 }
 
 /**
@@ -200,7 +182,7 @@ bool checkIntValue(int &value) {
 * @param paramName - название параметра для сообщения об ошибке
 * @return true если значение положительное, false в противном случае
 */
-bool checkPositive(double value, const string &paramName) {
+bool checkPositive(const double value, const string &paramName) {
     if (value <= 0) {
         cout << "Ошибка! " << paramName << " должен быть положительным числом!" << endl;
         return false;
@@ -208,29 +190,35 @@ bool checkPositive(double value, const string &paramName) {
     return true;
 }
 
-bool checkInterval(double start, double end) {
+bool checkInterval(const double start, const double end) {
     if (end <= start) {
         return false;
     }
     return true;
 }
 
-double getFunc(double a) {
+double getFunc(const double a) {
     return (exp(a) - exp(-a)) / 2.0;
 }
 
-double nextElement(double previous, double a, int n) {
+double nextElement(const double previous, const double a, const int n) {
     return previous * (a * a) / ((2.0 * n) * (2.0 * n + 1.0));
 }
 
-double getSum(double a, double eps) {
+double getSum(const double a, const double eps) {
+    // Проверка для a = 0
+    if (fabs(a) < 1e-12) {
+        return 0.0;
+    }
+    
     // Первый элемент ряда для гиперболического синуса: a
     double element = a;
     double sum = element;
     int n = 1;
     
     while (fabs(element) > eps && n < 1000) {
-        element = nextElement(element, a, n);
+        // Рекуррентное выражение напрямую
+        element = element * (a * a) / ((2.0 * n) * (2.0 * n + 1.0));
         sum += element;
         n++;
     }
@@ -238,7 +226,12 @@ double getSum(double a, double eps) {
     return sum;
 }
 
-double getRecurent(double a, double eps, int maxIterations) {
+double getRecurent(const double a, const double eps, const int maxIterations) {
+    // Проверка для a = 0
+    if (fabs(a) < 1e-12) {
+        return 0.0;
+    }
+    
     double sum = a;  // Первый элемент
     double element = a;
     
