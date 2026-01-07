@@ -13,10 +13,9 @@ enum Operation {
 
 /**
 * @brief Проверяет, правильно ли введено целое число
-* @param value - переменная, куда сохранить число
-* @return true если ввод правильный, false если ошибка
+* @return считанное число или программа завершается при ошибке
 */
-bool checkValue(int &value);
+int checkValue();
 
 /**
 * @brief Проверяет, положительное ли число
@@ -24,7 +23,7 @@ bool checkValue(int &value);
 * @param paramName - название параметра (для сообщения об ошибке)
 * @return true если число положительное, false если нет
 */
-bool checkPositive(int value, const string &paramName);
+bool checkPositive(const int value, const string &paramName);
 
 /**
 * @brief Проверяет правильность границ для случайных чисел
@@ -32,14 +31,14 @@ bool checkPositive(int value, const string &paramName);
 * @param max - максимальное значение
 * @return true если min <= max, false если наоборот
 */
-bool checkInterval(int min, int max);
+bool checkInterval(const int min, const int max);
 
 /**
 * @brief Создает массив (вектор) заданного размера
 * @param n - размер массива
 * @return готовый вектор нужного размера
 */
-vector<int> createArray(size_t n);
+vector<int> createArray(const size_t n);
 
 /**
 * @brief Показывает массив на экране
@@ -67,13 +66,6 @@ void fillArrayRandomly(vector<int>& arr);
 int sumOneDigitNumbers(const vector<int>& arr);
 
 /**
-* @brief Создает копию массива
-* @param arr - исходный массив
-* @return новая копия массива
-*/
-vector<int> copyArray(const vector<int>& arr);
-
-/**
 * @brief Переворачивает часть массива между минимальным и максимальным элементами
 * @param arr - массив для изменения
 */
@@ -85,7 +77,7 @@ void reverseBetweenMinMax(vector<int>& arr);
 * @param x - число для сравнения
 * @return индекс первого элемента пары или -1 если пара не найдена
 */
-int findLastPair(const vector<int>& arr, int x);
+int findLastPair(const vector<int>& arr, const int x);
 
 /**
 * @brief Заполняет массив случайными числами рекурсивно (демонстрация рекуррентного метода)
@@ -94,7 +86,7 @@ int findLastPair(const vector<int>& arr, int x);
 * @param min - минимальное значение
 * @param max - максимальное значение
 */
-void getRecurent(vector<int>& arr, int index, int min, int max);
+void getRecurent(vector<int>& arr, const int index, const int min, const int max);
 
 
 /**
@@ -108,27 +100,18 @@ int main() {
     cout << "=== ЛАБОРАТОРНАЯ РАБОТА: РАБОТА С МАССИВАМИ ===" << endl;
     cout << "Программа выполняет различные операции с массивом целых чисел." << endl;
     
-    int arraySize;
+    int arraySize = 0;
     cout << "Шаг 1: Введите размер массива (положительное число): ";
-    
-    // Используем checkValue для проверки ввода
-    // Цикл будет повторяться, пока пользователь не введет правильное число
-    while (!checkValue(arraySize)) {
-        cout << "Неправильный ввод! Нужно ввести целое число. Попробуйте снова: ";
-    }
+    arraySize = checkValue();
     
     // Проверяем, что размер положительный с помощью checkPositive
     if (!checkPositive(arraySize, "Размер массива")) {
         return 1;  
     }
     
-    int numberX;
+    int numberX = 0;
     cout << "Шаг 2: Введите число X (для поиска пар): ";
-    
-    // Аналогично проверяем ввод X
-    while (!checkValue(numberX)) {
-        cout << "Неправильный ввод! Нужно ввести целое число. Попробуйте снова: ";
-    }
+    numberX = checkValue();
     
     cout << "Шаг 3: Создаем массив размера " << arraySize << "..." << endl;
     vector<int> myArray = createArray(arraySize);
@@ -138,10 +121,7 @@ int main() {
     cout << FILL_RANDOMLY << " - Заполнить случайными числами" << endl;
     cout << "Ваш выбор: ";
     
-    int choice;
-    while (!checkValue(choice)) {
-        cout << "Неправильный ввод! Введите 0 или 1: ";
-    }
+    int choice = checkValue();
     
     // Обрабатываем выбор пользователя
     switch(choice) {
@@ -163,7 +143,7 @@ int main() {
     
     cout << "=== РЕЗУЛЬТАТЫ ===" << endl;
     
-    //. Выводим исходный массив
+    // Выводим исходный массив
     cout << "1. Исходный массив:" << endl;
     printArray(myArray);
     
@@ -174,7 +154,7 @@ int main() {
     
     // Переворачиваем часть между min и max
     cout << "3. Переворачиваем элементы между минимальным и максимальным:" << endl;
-    vector<int> copiedArray = copyArray(myArray);  // Создаем копию, чтобы не испортить оригинал
+    vector<int> copiedArray(myArray);  // Создаем копию, чтобы не испортить оригинал
     reverseBetweenMinMax(copiedArray);
     cout << "   Результат: ";
     printArray(copiedArray);
@@ -197,7 +177,7 @@ int main() {
     cout << "=== ДОПОЛНИТЕЛЬНО: РЕКУРРЕНТНЫЙ МЕТОД ===" << endl;
     cout << "Создаем маленький массив (5 элементов) и заполняем рекурсивно:" << endl;
     
-    vector<int> recurentArray = createArray(5);
+    vector<int> recurentArray(5);
     getRecurent(recurentArray, 0, 1, 100);  // Заполняем числами от 1 до 100
     
     cout << "Массив, заполненный рекурсивно: ";
@@ -209,30 +189,28 @@ int main() {
 
 /**
  * Функция checkValue проверяет, правильно ли пользователь ввел целое число.
- * Она пытается считать число, и если возникает ошибка (например, ввели текст),
- * то очищает поток ввода и возвращает false.
+ * @return считанное целое число
  */
-bool checkValue(int &value) {
+int checkValue() {
+    int value;
     cin >> value;  // Пытаемся считать число
     
     // Если произошла ошибка (например, ввели буквы вместо цифр)
     if (cin.fail()) {
-        cin.clear();  // Сбрасываем флаги ошибок
-        // Очищаем все, что осталось во входном потоке
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        return false;  // Сообщаем, что ввод неудачный
+        cout << "Ошибка ввода! Программа завершена." << endl;
+        exit(1);
     }
     
-    // Если все хорошо, очищаем оставшийся символ перевода строки
+    // Очищаем буфер ввода
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    return true;  // Ввод успешен
+    return value;  // Возвращаем считанное значение
 }
 
 /**
  * Функция checkPositive проверяет, является ли число положительным.
  * Используется для проверки размера массива.
  */
-bool checkPositive(int value, const string &paramName) {
+bool checkPositive(const int value, const string &paramName) {
     if (value <= 0) {
         cout << "Ошибка! Параметр '" << paramName 
              << "' должен быть положительным числом!" << endl;
@@ -245,7 +223,7 @@ bool checkPositive(int value, const string &paramName) {
  * Функция checkInterval проверяет, что минимум не больше максимума.
  * Нужна для задания границ случайных чисел.
  */
-bool checkInterval(int min, int max) {
+bool checkInterval(const int min, const int max) {
     if (min > max) {
         cout << "Ошибка! Минимальное значение (" << min 
              << ") не может быть больше максимального (" << max << ")!" << endl;
@@ -258,7 +236,7 @@ bool checkInterval(int min, int max) {
  * Функция createArray создает вектор (динамический массив) заданного размера.
  * В C++ vector сам управляет памятью, поэтому не нужно malloc/free.
  */
-vector<int> createArray(size_t n) {
+vector<int> createArray(const size_t n) {
     return vector<int>(n);  // Создаем вектор из n элементов
 }
 
@@ -282,21 +260,17 @@ void printArray(const vector<int>& arr) {
         }
     }
     cout << endl;  
+}
 
 /**
  * Функция fillArrayManually позволяет пользователю ввести все числа массива вручную.
- * Для каждого элемента вызываем checkValue для проверки ввода.
  */
 void fillArrayManually(vector<int>& arr) {
     cout << "Введите " << arr.size() << " чисел:" << endl;
     
     for (size_t i = 0; i < arr.size(); i++) {
         cout << "Элемент " << i + 1 << ": ";
-        
-        // Используем checkValue в цикле для гарантированно правильного ввода
-        while (!checkValue(arr[i])) {
-            cout << "Неправильный ввод! Введите целое число: ";
-        }
+        arr[i] = checkValue();
     }
 }
 
@@ -305,19 +279,16 @@ void fillArrayManually(vector<int>& arr) {
  * Сначала запрашиваем у пользователя границы диапазона.
  */
 void fillArrayRandomly(vector<int>& arr) {
-    int minValue, maxValue;
+    int minValue = 0;
+    int maxValue = 0;
     
     // Запрашиваем минимальное значение
     cout << "Введите минимальное значение: ";
-    while (!checkValue(minValue)) {
-        cout << "Неправильный ввод! Введите целое число: ";
-    }
+    minValue = checkValue();
     
     // Запрашиваем максимальное значение
     cout << "Введите максимальное значение: ";
-    while (!checkValue(maxValue)) {
-        cout << "Неправильный ввод! Введите целое число: ";
-    }
+    maxValue = checkValue();
     
     // Проверяем, что диапазон корректен
     if (!checkInterval(minValue, maxValue)) {
@@ -350,14 +321,6 @@ int sumOneDigitNumbers(const vector<int>& arr) {
     }
     
     return sum;  
-}
-
-/**
- * Функция copyArray создает точную копию массива.
- * В C++ это делается очень просто - конструктором копирования.
- */
-vector<int> copyArray(const vector<int>& arr) {
-    return vector<int>(arr);  // Создаем копию
 }
 
 /**
@@ -418,7 +381,7 @@ void reverseBetweenMinMax(vector<int>& arr) {
  * Функция findLastPair ищет последнюю пару соседних элементов,
  * у которых одинаковые знаки и произведение меньше заданного числа X.
  */
-int findLastPair(const vector<int>& arr, int x) {
+int findLastPair(const vector<int>& arr, const int x) {
     int lastFoundIndex = -1;  // -1 значит "не найдено"
     
     // Проходим по массиву, останавливаясь на предпоследнем элементе
@@ -429,7 +392,7 @@ int findLastPair(const vector<int>& arr, int x) {
         
         // Если знаки одинаковые И произведение меньше X
         if (sameSign && arr[i] * arr[i + 1] < x) {
-            lastFoundIndex = i;  // Запоминаем индекс
+            lastFoundIndex = static_cast<int>(i);  // Запоминаем индекс
             // Не прерываем цикл, ищем последнюю такую пару
         }
     }
@@ -441,9 +404,9 @@ int findLastPair(const vector<int>& arr, int x) {
  * Функция getRecurent демонстрирует рекуррентный метод заполнения массива.
  * Она заполняет массив рекурсивно, вызывая саму себя для каждого следующего элемента.
  */
-void getRecurent(vector<int>& arr, int index, int min, int max) {
+void getRecurent(vector<int>& arr, const int index, const int min, const int max) {
     // Базовый случай рекурсии: если дошли до конца массива
-    if (index >= arr.size()) {
+    if (index >= static_cast<int>(arr.size())) {
         return;  
     }
     
