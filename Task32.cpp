@@ -19,7 +19,7 @@ bool checkValue(double &value);
 * @param paramName - название параметра для сообщения об ошибке
 * @return true если значение положительное, false в противном случае
 */
-bool checkPositive(double value, const string &paramName);
+bool checkPositive(const double value, const string &paramName);
 
 /**
 * @brief Проверяет корректность интервала
@@ -27,14 +27,14 @@ bool checkPositive(double value, const string &paramName);
 * @param end - конец интервала
 * @return true если интервал корректен, false в противном случае
 */
-bool checkInterval(double start, double end);
+bool checkInterval(const double start, const double end);
 
 /**
 * @brief Вычисляет функцию y = (e^a - e^(-a)) / 2 (гиперболический синус)
 * @param a значение переменной a
 * @return Возвращает значение функции
 */
-double getFunc(double a);
+double getFunc(const double a);
 
 /**
 * @brief Рассчитывает значение суммы ряда с точностью до epsilon
@@ -42,7 +42,7 @@ double getFunc(double a);
 * @param eps значение величины точности
 * @return Возвращает значение суммы ряда
 */
-double getSum(double a, double eps);
+double getSum(const double a, const double eps);
 
 /**
 * @brief Рекуррентное вычисление суммы ряда
@@ -51,7 +51,7 @@ double getSum(double a, double eps);
 * @param maxIterations максимальное количество итераций
 * @return значение суммы ряда
 */
-double getRecurent(double a, double eps, int maxIterations = 1000);
+double getRecurent(const double a, const double eps, int maxIterations = 1000);
 
 /**
  * @brief Точка входа в программу
@@ -59,22 +59,22 @@ double getRecurent(double a, double eps, int maxIterations = 1000);
  */
 int main()
 {
-    const double eps = 1e-4;  // Точность 10^-4
-    
     cout << "=== Вычисление гиперболического синуса sh(x) и его разложения в ряд ===" << endl;
     
     // Ввод начала интервала
     double iStart;
     cout << "Введите начало интервала: ";
-    while (!checkValue(iStart)) {
-        cout << "Ошибка! Нужно вводить только числа! Попробуйте снова: ";
+    if (!checkValue(iStart)) {
+        cout << "Ошибка! Нужно вводить только числа!" << endl;
+        return 1;
     }
     
     // Ввод конца интервала
     double iEnd;
     cout << "Введите конец интервала: ";
-    while (!checkValue(iEnd)) {
-        cout << "Ошибка! Нужно вводить только числа! Попробуйте снова: ";
+    if (!checkValue(iEnd)) {
+        cout << "Ошибка! Нужно вводить только числа!" << endl;
+        return 1;
     }
     
     // Проверка интервала
@@ -86,14 +86,17 @@ int main()
     // Ввод шага
     double step;
     cout << "Введите значение шага: ";
-    while (!checkValue(step)) {
-        cout << "Ошибка! Нужно вводить только числа! Попробуйте снова: ";
+    if (!checkValue(step)) {
+        cout << "Ошибка! Нужно вводить только числа!" << endl;
+        return 1;
     }
     
     // Проверка шага
     if (!checkPositive(step, "Шаг")) {
         return 1;
     }
+    
+    const double eps = 1e-4;  // Точность 10^-4
     
     // Выводим заголовок таблицы
     cout << endl;
@@ -138,7 +141,7 @@ bool checkValue(double &value) {
     return true;
 }
 
-bool checkPositive(double value, const string &paramName) {
+bool checkPositive(const double value, const string &paramName) {
     if (value <= 0) {
         cout << "Ошибка! " << paramName << " должен быть положительным числом!" << endl;
         return false;
@@ -146,26 +149,21 @@ bool checkPositive(double value, const string &paramName) {
     return true;
 }
 
-bool checkInterval(double start, double end) {
-    if (end <= start) {
-        return false;
-    }
-    return true;
+bool checkInterval(const double start, const double end) {
+    return end > start;
 }
 
-double getFunc(double a) {
+double getFunc(const double a) {
     return (exp(a) - exp(-a)) / 2.0;
 }
 
-double getSum(double a, double eps) {
+double getSum(const double a, const double eps) {
     // Первый элемент ряда для гиперболического синуса: a
     double element = a;
     double sum = element;
     int n = 1;
     
     while (fabs(element) > eps && n < 1000) {
-        // ВМЕСТО ВЫЗОВА nextElement - РЕКУРРЕНТНОЕ ВЫРАЖЕНИЕ ПРЯМО ЗДЕСЬ
-        // element = nextElement(element, a, n);
         element = element * (a * a) / ((2.0 * n) * (2.0 * n + 1.0));
         sum += element;
         n++;
@@ -174,7 +172,7 @@ double getSum(double a, double eps) {
     return sum;
 }
 
-double getRecurent(double a, double eps, int maxIterations) {
+double getRecurent(const double a, const double eps, int maxIterations) {
     double sum = a;  // Первый элемент
     double element = a;
     
