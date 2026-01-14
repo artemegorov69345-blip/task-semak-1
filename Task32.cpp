@@ -11,7 +11,7 @@ using namespace std;
 * @param value - ссылка на переменную для сохранения значения
 * @return true если ввод корректен, false если есть ошибка
 */
-bool checkValue(double &value);
+bool checkValue(const double &value);
 
 /**
 * @brief Проверяет положительное значение
