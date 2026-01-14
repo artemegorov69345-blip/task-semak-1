@@ -62,7 +62,7 @@ int main()
     cout << "=== Вычисление гиперболического синуса sh(x) и его разложения в ряд ===" << endl;
     
     // Ввод начала интервала
-    double iStart;
+    double iStart = 0;
     cout << "Введите начало интервала: ";
     if (!checkValue(iStart)) {
         cout << "Ошибка! Нужно вводить только числа!" << endl;
@@ -84,7 +84,7 @@ int main()
     }
     
     // Ввод шага
-    double step;
+    double step = 0;
     cout << "Введите значение шага: ";
     if (!checkValue(step)) {
         cout << "Ошибка! Нужно вводить только числа!" << endl;
