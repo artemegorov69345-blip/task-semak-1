@@ -73,9 +73,16 @@ double getRecurent(const double a, const double eps, const int maxIterations = 1
  */
 int main()
 {
-    const double eps = 1e-4;  // Точность 10^-4 для вычисления суммы ряда
-    
     cout << "=== Вычисление гиперболического синуса sh(x) и его разложения в ряд ===" << endl;
+    
+    // Ввод точности вычислений пользователем
+    cout << "Введите точность вычислений (например, 0.0001): ";
+    double eps = checkValue();
+    
+    // Проверка, что точность положительная
+    if (!checkPositive(eps, "Точность вычислений")) {
+        return 1;
+    }
     
     // Ввод параметров для табулирования функции
     cout << "Введите начало интервала табулирования: ";
@@ -105,7 +112,7 @@ int main()
     // Выводим заголовок таблицы
     cout << endl;
     cout << "Таблица значений функции sh(x) = (e^x - e^(-x))/2 и ее разложения в ряд Тейлора:" << endl;
-    cout << "Интервал: [" << iStart << ", " << iEnd << "], шагов: " << stepCount << endl;
+    cout << "Интервал: [" << iStart << ", " << iEnd << "], шагов: " << stepCount << ", точность: " << eps << endl;
     cout << "+----------+---------------+---------------+---------------+" << endl;
     cout << "|     x    |    sh(x)      |    S(x)       |    |f-S|     |" << endl;
     cout << "+----------+---------------+---------------+---------------+" << endl;
@@ -202,41 +209,43 @@ double getFunc(const double a) {
 }
 
 double nextElement(const double previous, const double a, const int n) {
-    return previous * (a * a) / ((2.0 * n) * (2.0 * n + 1.0));
+    // Исправленная рекуррентная формула
+    return previous * (a * a) / ((2.0 * n - 1.0) * (2.0 * n));
 }
 
 double getSum(const double a, const double eps) {
-    // Проверка для a = 0
-    if (fabs(a) < 1e-12) {
+    // Проверка для a = 0 с использованием константы из cmath
+    if (fabs(a) < numeric_limits<double>::epsilon()) {
         return 0.0;
     }
     
     // Первый элемент ряда для гиперболического синуса: a
     double element = a;
     double sum = element;
-    int n = 1;
+    int k = 1;  // номер текущего элемента (начиная с 1 для второго элемента)
     
-    while (fabs(element) > eps && n < 1000) {
-        // Рекуррентное выражение напрямую
-        element = element * (a * a) / ((2.0 * n) * (2.0 * n + 1.0));
+    while (fabs(element) > eps && k < 1000) {
+        // Исправленная рекуррентная формула
+        element = element * (a * a) / ((2.0 * k - 1.0) * (2.0 * k));
         sum += element;
-        n++;
+        k++;
     }
     
     return sum;
 }
 
 double getRecurent(const double a, const double eps, const int maxIterations) {
-    // Проверка для a = 0
-    if (fabs(a) < 1e-12) {
+    // Проверка для a = 0 с использованием константы из cmath
+    if (fabs(a) < numeric_limits<double>::epsilon()) {
         return 0.0;
     }
     
     double sum = a;  // Первый элемент
     double element = a;
     
-    for (int n = 1; n < maxIterations && fabs(element) > eps; n++) {
-        element = element * (a * a) / ((2.0 * n) * (2.0 * n + 1.0));
+    for (int k = 1; k < maxIterations && fabs(element) > eps; k++) {
+        // Исправленная рекуррентная формула
+        element = element * (a * a) / ((2.0 * k - 1.0) * (2.0 * k));
         sum += element;
     }
     
