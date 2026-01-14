@@ -161,12 +161,12 @@ double getSum(const double a, const double eps) {
     // Первый элемент ряда для гиперболического синуса: a
     double element = a;
     double sum = element;
-    int n = 1;
+    int k = 1;
     
-    while (fabs(element) > eps && n < 1000) {
-        element = element * (a * a) / ((2.0 * n) * (2.0 * n + 1.0));
+    while (fabs(element) > eps && k < 1000) {
+        element = element * (a * a) / ((2.0 * k - 1.0) * (2.0 * k));
         sum += element;
-        n++;
+        k++;
     }
     
     return sum;
@@ -176,8 +176,8 @@ double getRecurent(const double a, const double eps, int maxIterations) {
     double sum = a;  // Первый элемент
     double element = a;
     
-    for (int n = 1; n < maxIterations && fabs(element) > eps; n++) {
-        element = element * (a * a) / ((2.0 * n) * (2.0 * n + 1.0));
+    for (int k = 1; k < maxIterations && fabs(element) > eps; k++) {
+        element = element * (a * a) / ((2.0 * k - 1.0) * (2.0 * k));
         sum += element;
     }
     
