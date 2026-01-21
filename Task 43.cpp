@@ -1,10 +1,10 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include <vector>
 #include <iomanip>
 #include <cmath>
 #include <limits>
+#include <algorithm>
 
 using namespace std;
 
@@ -34,83 +34,101 @@ bool checkValue(int &value);
  * @param paramName - название параметра для вывода в сообщении об ошибке
  * @return true - если значение положительное, false - в противном случае
  */
-bool checkPositive(int value, const string &paramName);
+bool checkPositive(const int value, const string &paramName);
 
 /**
  * @brief Создает двумерный массив заданного размера n x m
  * @param n - количество строк в массиве
  * @param m - количество столбцов в массиве
- * @return vector<vector<int>> - созданный двумерный массив
+ * @return int** - указатель на созданный двумерный массив
  * @details Функция динамически выделяет память под массив.
  *          Проверяет корректность размеров перед выделением памяти.
  */
-vector<vector<int>> createArray(int n, int m);
+int** createArray(const int n, const int m);
+
+/**
+ * @brief Освобождает память, занятую двумерным массивом
+ * @param array - указатель на массив для освобождения
+ * @param n - количество строк в массиве
+ */
+void deleteArray(int** array, const int n);
 
 /**
  * @brief Выводит двумерный массив на экран в табличном формате
- * @param array - константная ссылка на массив для вывода
+ * @param array - указатель на массив для вывода
+ * @param n - количество строк в массиве
+ * @param m - количество столбцов в массиве
  * @details Форматирует вывод для удобного чтения с заголовками строк и столбцов
  */
-void printArray(const vector<vector<int>>& array);
+void printArray(int* const* const array, const int n, const int m);
 
 /**
  * @brief Заполняет массив значениями, введенными пользователем с клавиатуры
- * @param array - ссылка на массив для заполнения
+ * @param array - указатель на массив для заполнения
+ * @param n - количество строк в массиве
+ * @param m - количество столбцов в массиве
  */
-void fillArrayManually(vector<vector<int>>& array);
+void fillArrayManually(int** array, const int n, const int m);
 
 /**
  * @brief Заполняет массив случайными числами в заданном диапазоне
- * @param array - ссылка на массив для заполнения
+ * @param array - указатель на массив для заполнения
+ * @param n - количество строк в массиве
+ * @param m - количество столбцов в массиве
  */
-void fillArrayRandomly(vector<vector<int>>& array);
+void fillArrayRandomly(int** array, const int n, const int m);
 
 /**
  * @brief Находит максимальный по модулю элемент в указанном столбце массива
- * @param array - константная ссылка на массив
+ * @param array - указатель на массив
+ * @param n - количество строк в массиве
  * @param col - номер столбца (начинается с 0)
  * @return int - максимальное абсолютное значение элемента в столбце
  */
-int findMaxAbsInColumn(const vector<vector<int>>& array, int col);
+int findMaxAbsInColumn(int* const* const array, const int n, const int col);
 
 /**
  * @brief Заменяет четные элементы каждого столбца максимальным по модулю элементом этого столбца
- * @param array - ссылка на массив для модификации
- * @details Создает копию исходного массива и работает с ней
+ * @param array - указатель на массив для модификации
+ * @param n - количество строк в массиве
+ * @param m - количество столбцов в массиве
  */
-void replaceEvenWithMaxAbs(vector<vector<int>>& array);
+void replaceEvenWithMaxAbs(int** array, const int n, const int m);
 
 /**
  * @brief Проверяет, является ли первый элемент указанного столбца четным числом
- * @param array - константная ссылка на массив
+ * @param array - указатель на массив
  * @param col - номер столбца
  * @return true - если первый элемент четный, false - в противном случае
  */
-bool isFirstElementEven(const vector<vector<int>>& array, int col);
+bool isFirstElementEven(int* const* const array, const int col);
 
 /**
  * @brief Удаляет все столбцы, в которых первый элемент является четным числом
- * @param array - ссылка на массив для обработки
- * @details Создает новый массив без указанных столбцов
+ * @param array - ссылка на указатель массива для обработки
+ * @param n - количество строк в массиве
+ * @param m - ссылка на количество столбцов в массиве
  */
-void deleteColumnsWithEvenFirst(vector<vector<int>>& array);
+void deleteColumnsWithEvenFirst(int**& array, const int n, int& m);
 
 /**
  * @brief Рекурсивно заполняет строку массива случайными числами
- * @param array - ссылка на массив
+ * @param array - указатель на массив
  * @param row - номер строки для заполнения
  * @param col - текущий столбец для заполнения
+ * @param cols - общее количество столбцов
  * @param min - минимальное значение случайного числа
  * @param max - максимальное значение случайного числа
  * @details Использует рекурсию для заполнения строки слева направо
  */
-void fillRowRecursively(vector<vector<int>>& array, int row, int col, int min, int max);
+void fillRowRecursively(int** array, const int row, int col, const int cols, 
+                        const int min, const int max);
 
 int main() {
     cout << "=== РАБОТА С ДВУМЕРНЫМ МАССИВОМ n x m ===" << endl;
     
-    // Ввод количества строк массива
-    int n;
+    // Ввод количества строк массива с инициализацией
+    int n = 0;
     cout << "Введите количество строк массива (n > 0): ";
     
     while (!checkValue(n)) {
@@ -122,8 +140,8 @@ int main() {
         return 1;
     }
     
-    // Ввод количества столбцов массива
-    int m;
+    // Ввод количества столбцов массива с инициализацией
+    int m = 0;
     cout << "Введите количество столбцов массива (m > 0): ";
     
     while (!checkValue(m)) {
@@ -137,7 +155,7 @@ int main() {
     
     // Создание массива с проверкой
     cout << "Создаем массив " << n << " x " << m << "..." << endl;
-    vector<vector<int>> originalArray;
+    int** originalArray = nullptr;
     
     try {
         originalArray = createArray(n, m);
@@ -154,7 +172,7 @@ int main() {
     cout << FILL_RANDOMLY << " - Заполнение случайными числами" << endl;
     cout << "Ваш выбор (" << FILL_MANUALLY << " или " << FILL_RANDOMLY << "): ";
     
-    int choice;
+    int choice = 0;
     while (!checkValue(choice) || (choice != FILL_MANUALLY && choice != FILL_RANDOMLY)) {
         cout << "Ошибка! Введите " << FILL_MANUALLY << " или " << FILL_RANDOMLY << ": ";
         cin.clear();
@@ -164,47 +182,62 @@ int main() {
     // Заполнение массива в зависимости от выбора
     switch(choice) {
         case FILL_MANUALLY:
-            fillArrayManually(originalArray);
+            fillArrayManually(originalArray, n, m);
             break;
         case FILL_RANDOMLY:
             // Инициализация генератора случайных чисел только при необходимости
             srand(static_cast<unsigned>(time(nullptr)));
-            fillArrayRandomly(originalArray);
+            fillArrayRandomly(originalArray, n, m);
             break;
         default:
             cout << "Критическая ошибка: некорректный выбор заполнения!" << endl;
+            deleteArray(originalArray, n);
             return 1;
     }
     
     // Вывод исходного массива
     cout << "\n=== ИСХОДНЫЙ МАССИВ ===" << endl;
-    printArray(originalArray);
+    printArray(originalArray, n, m);
     
     // 1. Замена четных элементов каждого столбца максимальным по модулю элементом
     cout << "\n=== ЗАМЕНА ЧЕТНЫХ ЭЛЕМЕНТОВ ===" << endl;
     cout << "Заменяем четные элементы каждого столбца максимальным по модулю элементом этого столбца..." << endl;
     
     // Создаем копию для обработки
-    vector<vector<int>> arrayCopy1 = originalArray;
-    replaceEvenWithMaxAbs(arrayCopy1);
+    int** arrayCopy1 = createArray(n, m);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            arrayCopy1[i][j] = originalArray[i][j];
+        }
+    }
+    
+    replaceEvenWithMaxAbs(arrayCopy1, n, m);
     
     cout << "Результат преобразования:" << endl;
-    printArray(arrayCopy1);
+    printArray(arrayCopy1, n, m);
     
     // 2. Удаление столбцов с четным первым элементом
     cout << "\n=== УДАЛЕНИЕ СТОЛБЦОВ ===" << endl;
     cout << "Удаляем все столбцы, в которых первый элемент четный..." << endl;
     
     // Создаем еще одну копию для обработки
-    vector<vector<int>> arrayCopy2 = originalArray;
-    deleteColumnsWithEvenFirst(arrayCopy2);
+    int** arrayCopy2 = createArray(n, m);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            arrayCopy2[i][j] = originalArray[i][j];
+        }
+    }
     
-    if (arrayCopy2.empty() || arrayCopy2[0].empty()) {
+    int newM = m;
+    deleteColumnsWithEvenFirst(arrayCopy2, n, newM);
+    
+    if (newM == 0) {
         cout << "Все столбцы были удалены! Массив стал пустым." << endl;
+        deleteArray(arrayCopy2, n);
     } else {
-        cout << "Результат (новый размер: " << arrayCopy2.size() 
-             << " строк x " << arrayCopy2[0].size() << " столбцов):" << endl;
-        printArray(arrayCopy2);
+        cout << "Результат (новый размер: " << n << " строк x " << newM << " столбцов):" << endl;
+        printArray(arrayCopy2, n, newM);
+        deleteArray(arrayCopy2, n);
     }
     
     // 3. Демонстрация рекуррентного метода заполнения
@@ -212,21 +245,25 @@ int main() {
     cout << "Создаем массив 3x3 и заполняем его рекурсивно:" << endl;
     
     // Создаем отдельный массив для демонстрации
-    vector<vector<int>> recursiveArray;
-    try {
-        recursiveArray = createArray(3, 3);
+    int** recursiveArray = createArray(3, 3);
+    if (recursiveArray != nullptr) {
         // Инициализируем генератор случайных чисел для рекурсивного заполнения
         srand(static_cast<unsigned>(time(nullptr)) + 1);
         
         for (int i = 0; i < 3; i++) {
-            fillRowRecursively(recursiveArray, i, 0, 1, 100);
+            fillRowRecursively(recursiveArray, i, 0, 3, 1, 100);
         }
         
         cout << "Массив, заполненный рекурсивным методом:" << endl;
-        printArray(recursiveArray);
-    } catch (const bad_alloc& e) {
+        printArray(recursiveArray, 3, 3);
+        deleteArray(recursiveArray, 3);
+    } else {
         cout << "Не удалось создать массив для демонстрации рекурсивного метода." << endl;
     }
+    
+    // Освобождение памяти исходного массива и копии
+    deleteArray(originalArray, n);
+    deleteArray(arrayCopy1, n);
     
     cout << "\n=== ПРОГРАММА УСПЕШНО ЗАВЕРШЕНА ===" << endl;
     return 0;
@@ -243,7 +280,7 @@ bool checkValue(int &value) {
     return true;
 }
 
-bool checkPositive(int value, const string &paramName) {
+bool checkPositive(const int value, const string &paramName) {
     if (value <= 0) {
         cout << "Ошибка! " << paramName << " должен быть положительным целым числом!" << endl;
         return false;
@@ -251,7 +288,7 @@ bool checkPositive(int value, const string &paramName) {
     return true;
 }
 
-vector<vector<int>> createArray(int n, int m) {
+int** createArray(const int n, const int m) {
     if (n <= 0) {
         throw invalid_argument("Количество строк должно быть положительным");
     }
@@ -259,53 +296,55 @@ vector<vector<int>> createArray(int n, int m) {
         throw invalid_argument("Количество столбцов должно быть положительным");
     }
     
-    // Выделение памяти с проверкой
-    vector<vector<int>> array;
-    try {
-        array.resize(n, vector<int>(m));
-    } catch (const bad_alloc& e) {
-        cerr << "Ошибка выделения памяти для массива размером " << n << "x" << m << endl;
-        throw; // Пробрасываем исключение дальше
+    int** array = new int*[n];
+    for (int i = 0; i < n; i++) {
+        array[i] = new int[m];
     }
     
     return array;
 }
 
-void printArray(const vector<vector<int>>& array) {
-    if (array.empty()) {
+void deleteArray(int** array, const int n) {
+    if (array == nullptr) return;
+    
+    for (int i = 0; i < n; i++) {
+        delete[] array[i];
+    }
+    delete[] array;
+}
+
+void printArray(int* const* const array, const int n, const int m) {
+    if (array == nullptr) {
         cout << "Массив пуст!" << endl;
         return;
     }
     
-    int rows = array.size();
-    int cols = array[0].size();
-    
     // Вывод заголовков столбцов
     cout << "       ";
-    for (int j = 0; j < cols; j++) {
+    for (int j = 0; j < m; j++) {
         cout << setw(6) << "Стлб " << j + 1;
     }
     cout << endl;
     
     // Вывод разделительной линии
     cout << "      +";
-    for (int j = 0; j < cols; j++) {
+    for (int j = 0; j < m; j++) {
         cout << "------+";
     }
     cout << endl;
     
     // Вывод строк массива
-    for (int i = 0; i < rows; i++) {
+    for (int i = 0; i < n; i++) {
         cout << "Стр " << setw(2) << i + 1 << " |";
-        for (int j = 0; j < cols; j++) {
+        for (int j = 0; j < m; j++) {
             cout << setw(6) << array[i][j] << "|";
         }
         cout << endl;
         
         // Вывод разделительной линии между строками
-        if (i < rows - 1) {
+        if (i < n - 1) {
             cout << "      +";
-            for (int j = 0; j < cols; j++) {
+            for (int j = 0; j < m; j++) {
                 cout << "------+";
             }
             cout << endl;
@@ -314,20 +353,18 @@ void printArray(const vector<vector<int>>& array) {
     
     // Нижняя граница
     cout << "      +";
-    for (int j = 0; j < cols; j++) {
+    for (int j = 0; j < m; j++) {
         cout << "------+";
     }
     cout << endl;
 }
 
-void fillArrayManually(vector<vector<int>>& array) {
-    int rows = array.size();
-    int cols = array[0].size();
-    cout << "Введите элементы массива " << rows << " x " << cols << ":" << endl;
+void fillArrayManually(int** array, const int n, const int m) {
+    cout << "Введите элементы массива " << n << " x " << m << ":" << endl;
     
-    for (int i = 0; i < rows; i++) {
+    for (int i = 0; i < n; i++) {
         cout << "Строка " << i + 1 << ":" << endl;
-        for (int j = 0; j < cols; j++) {
+        for (int j = 0; j < m; j++) {
             cout << "  Элемент [" << i + 1 << "][" << j + 1 << "]: ";
             
             while (!checkValue(array[i][j])) {
@@ -338,8 +375,9 @@ void fillArrayManually(vector<vector<int>>& array) {
     cout << "Массив успешно заполнен вручную." << endl;
 }
 
-void fillArrayRandomly(vector<vector<int>>& array) {
-    int minValue, maxValue;
+void fillArrayRandomly(int** array, const int n, const int m) {
+    int minValue = 0;
+    int maxValue = 0;
     
     cout << "Введите минимальное значение для случайных чисел: ";
     while (!checkValue(minValue)) {
@@ -357,11 +395,8 @@ void fillArrayRandomly(vector<vector<int>>& array) {
         swap(minValue, maxValue);
     }
     
-    int rows = array.size();
-    int cols = array[0].size();
-    
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
             array[i][j] = rand() % (maxValue - minValue + 1) + minValue;
         }
     }
@@ -370,15 +405,14 @@ void fillArrayRandomly(vector<vector<int>>& array) {
          << minValue << ", " << maxValue << "]" << endl;
 }
 
-int findMaxAbsInColumn(const vector<vector<int>>& array, int col) {
-    if (array.empty() || col >= array[0].size()) {
+int findMaxAbsInColumn(int* const* const array, const int n, const int col) {
+    if (array == nullptr) {
         return 0;
     }
     
     int maxAbs = abs(array[0][col]);
-    int rows = array.size();
     
-    for (int i = 1; i < rows; i++) {
+    for (int i = 1; i < n; i++) {
         int currentAbs = abs(array[i][col]);
         if (currentAbs > maxAbs) {
             maxAbs = currentAbs;
@@ -388,64 +422,65 @@ int findMaxAbsInColumn(const vector<vector<int>>& array, int col) {
     return maxAbs;
 }
 
-void replaceEvenWithMaxAbs(vector<vector<int>>& array) {
-    if (array.empty()) return;
-    
-    int rows = array.size();
-    int cols = array[0].size();
+void replaceEvenWithMaxAbs(int** array, const int n, const int m) {
+    if (array == nullptr) return;
     
     // Находим максимальные по модулю значения для каждого столбца
-    vector<int> maxAbsValues(cols);
-    for (int j = 0; j < cols; j++) {
-        maxAbsValues[j] = findMaxAbsInColumn(array, j);
+    int* maxAbsValues = new int[m];
+    for (int j = 0; j < m; j++) {
+        maxAbsValues[j] = findMaxAbsInColumn(array, n, j);
     }
     
     // Заменяем четные элементы на максимальные значения их столбцов
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
             if (array[i][j] % 2 == 0) {
                 array[i][j] = maxAbsValues[j];
             }
         }
     }
+    
+    delete[] maxAbsValues;
 }
 
-bool isFirstElementEven(const vector<vector<int>>& array, int col) {
-    if (array.empty() || col >= array[0].size()) {
+bool isFirstElementEven(int* const* const array, const int col) {
+    if (array == nullptr) {
         return false;
     }
     return (array[0][col] % 2 == 0);
 }
 
-void deleteColumnsWithEvenFirst(vector<vector<int>>& array) {
-    if (array.empty()) return;
-    
-    int rows = array.size();
-    int cols = array[0].size();
+void deleteColumnsWithEvenFirst(int**& array, const int n, int& m) {
+    if (array == nullptr) return;
     
     // Определяем, какие столбцы нужно сохранить (где первый элемент нечетный)
-    vector<bool> keepColumn(cols, false);
+    bool* keepColumn = new bool[m];
     int columnsToKeep = 0;
     
-    for (int j = 0; j < cols; j++) {
+    for (int j = 0; j < m; j++) {
         if (!isFirstElementEven(array, j)) {
             keepColumn[j] = true;
             columnsToKeep++;
+        } else {
+            keepColumn[j] = false;
         }
     }
     
     // Если не осталось столбцов для сохранения
     if (columnsToKeep == 0) {
-        array.clear();
+        deleteArray(array, n);
+        array = nullptr;
+        m = 0;
+        delete[] keepColumn;
         return;
     }
     
     // Создаем новый массив с сохраненными столбцами
-    vector<vector<int>> newArray(rows, vector<int>(columnsToKeep));
+    int** newArray = createArray(n, columnsToKeep);
     
-    for (int i = 0; i < rows; i++) {
+    for (int i = 0; i < n; i++) {
         int newColIndex = 0;
-        for (int j = 0; j < cols; j++) {
+        for (int j = 0; j < m; j++) {
             if (keepColumn[j]) {
                 newArray[i][newColIndex] = array[i][j];
                 newColIndex++;
@@ -453,13 +488,16 @@ void deleteColumnsWithEvenFirst(vector<vector<int>>& array) {
         }
     }
     
-    // Заменяем старый массив новым
+    // Освобождаем старый массив и заменяем его новым
+    deleteArray(array, n);
     array = newArray;
+    m = columnsToKeep;
+    
+    delete[] keepColumn;
 }
 
-void fillRowRecursively(vector<vector<int>>& array, int row, int col, int min, int max) {
-    int cols = array[0].size();
-    
+void fillRowRecursively(int** array, const int row, int col, const int cols, 
+                        const int min, const int max) {
     // Базовый случай рекурсии: достигли конца строки
     if (col >= cols) {
         return;
@@ -469,5 +507,5 @@ void fillRowRecursively(vector<vector<int>>& array, int row, int col, int min, i
     array[row][col] = rand() % (max - min + 1) + min;
     
     // Рекурсивный вызов для следующего элемента
-    fillRowRecursively(array, row, col + 1, min, max);
+    fillRowRecursively(array, row, col + 1, cols, min, max);
 }
