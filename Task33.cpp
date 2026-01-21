@@ -54,18 +54,10 @@ double nextElement(const double previous, const double a, const int n);
 * @brief Рассчитывает значение суммы ряда с точностью до epsilon
 * @param a значение переменной a
 * @param eps значение величины точности
+* @param maxIterations максимальное количество итераций
 * @return Возвращает значение суммы ряда
 */
-double getSum(const double a, const double eps);
-
-/**
-* @brief Рекуррентное вычисление суммы ряда
-* @param a значение переменной a
-* @param eps точность вычислений
-* @param maxIterations максимальное количество итераций
-* @return значение суммы ряда
-*/
-double getRecurent(const double a, const double eps, const int maxIterations = 1000);
+double getSum(const double a, const double eps, const int maxIterations = 1000);
 
 /**
  * @brief Точка входа в программу
@@ -146,7 +138,6 @@ int main()
     cout << "Тестовое значение x = " << testValue << endl;
     cout << "Точное значение sh(" << testValue << ") = " << getFunc(testValue) << endl;
     cout << "Сумма ряда с точностью " << eps << " = " << getSum(testValue, eps) << endl;
-    cout << "Рекуррентное вычисление = " << getRecurent(testValue, eps) << endl;
     
     return 0;
 }
@@ -160,7 +151,7 @@ double checkValue() {
     cin >> value;
     if (cin.fail()) {
         cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max());
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << "Ошибка ввода! Программа завершена." << endl;
         exit(1);  // Завершение программы при ошибке ввода
     }
@@ -197,6 +188,12 @@ bool checkPositive(const double value, const string &paramName) {
     return true;
 }
 
+/**
+* @brief Проверяет корректность интервала
+* @param start - начало интервала
+* @param end - конец интервала
+* @return true если интервал корректен, false в противном случае
+*/
 bool checkInterval(const double start, const double end) {
     if (end <= start) {
         return false;
@@ -204,49 +201,48 @@ bool checkInterval(const double start, const double end) {
     return true;
 }
 
+/**
+* @brief Вычисляет функцию y = (e^a - e^(-a)) / 2 (гиперболический синус)
+* @param a значение переменной a
+* @return Возвращает значение функции
+*/
 double getFunc(const double a) {
     return (exp(a) - exp(-a)) / 2.0;
 }
 
+/**
+* @brief Рассчитывает значение следующего элемента ряда
+* @param previous предыдущий элемент ряда
+* @param a значение переменной a
+* @param n индекс элемента последовательности
+* @return Возвращает значение следующего элемента ряда
+*/
 double nextElement(const double previous, const double a, const int n) {
-    // Исправленная рекуррентная формула
     return previous * (a * a) / ((2.0 * n - 1.0) * (2.0 * n));
 }
 
-double getSum(const double a, const double eps) {
+/**
+* @brief Рассчитывает значение суммы ряда с точностью до epsilon
+* @param a значение переменной a
+* @param eps значение величины точности
+* @param maxIterations максимальное количество итераций
+* @return Возвращает значение суммы ряда
+*/
+double getSum(const double a, const double eps, const int maxIterations) {
     // Проверка для a = 0 с использованием константы из cmath
     if (fabs(a) < numeric_limits<double>::epsilon()) {
         return 0.0;
     }
     
-    // Первый элемент ряда для гиперболического синуса: a
+    double sum = a;  // Первый элемент ряда
     double element = a;
-    double sum = element;
-    int k = 1;  // номер текущего элемента (начиная с 1 для второго элемента)
+    int k = 1;  // Номер текущего элемента (начиная с 1 для второго элемента)
     
-    while (fabs(element) > eps && k < 1000) {
-        // Исправленная рекуррентная формула
-        element = element * (a * a) / ((2.0 * k - 1.0) * (2.0 * k));
+    while (k < maxIterations && fabs(element) > eps) {
+        // Использование функции nextElement для расчета следующего элемента
+        element = nextElement(element, a, k);
         sum += element;
         k++;
-    }
-    
-    return sum;
-}
-
-double getRecurent(const double a, const double eps, const int maxIterations) {
-    // Проверка для a = 0 с использованием константы из cmath
-    if (fabs(a) < numeric_limits<double>::epsilon()) {
-        return 0.0;
-    }
-    
-    double sum = a;  // Первый элемент
-    double element = a;
-    
-    for (int k = 1; k < maxIterations && fabs(element) > eps; k++) {
-        // Исправленная рекуррентная формула
-        element = element * (a * a) / ((2.0 * k - 1.0) * (2.0 * k));
-        sum += element;
     }
     
     return sum;
