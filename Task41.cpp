@@ -9,27 +9,107 @@ using namespace std;
  * @brief Перечисление для выбора способа заполнения массива
  */
 enum Operation {
-    FILL_MANUALLY = 0,  
-    FILL_RANDOMLY = 1   
+    FILL_MANUALLY = 0,  ///< Ручной ввод элементов массива
+    FILL_RANDOMLY = 1   ///< Заполнение массива случайными числами
 };
 
 // Прототипы функций
-int checkValue();
-bool checkPositive(const int value, const string &paramName);
-bool checkInterval(const int min, const int max);
-int* createArray(const int n);
-void deleteArray(int* arr);
-void printArray(const int* arr, const int n);
-void fillArrayManually(int* arr, const int n);
-void fillArrayRandomly(int* arr, const int n);
-int sumOneDigitNumbers(const int* arr, const int n);
-void reverseBetweenMinMax(int* arr, const int n);
-int findLastPair(const int* arr, const int n, const int x);
-void getRecurent(int* arr, const int index, const int n, const int min, const int max);
 
+/**
+ * @brief Проверяет корректность ввода целого числа
+ * @return Введенное пользователем целое число
+ * @note При ошибке ввода завершает программу с кодом 1
+ */
+int checkValue();
+
+/**
+ * @brief Проверяет, является ли число положительным
+ * @param value Проверяемое значение
+ * @param paramName Название параметра для вывода в сообщении об ошибке
+ * @return true если значение положительное, иначе false
+ */
+bool checkPositive(const int value, const string &paramName);
+
+/**
+ * @brief Проверяет корректность интервала (min <= max)
+ * @param min Минимальное значение интервала
+ * @param max Максимальное значение интервала
+ * @return true если интервал корректен, иначе false
+ */
+bool checkInterval(const int min, const int max);
+
+/**
+ * @brief Создает динамический массив целых чисел
+ * @param n Размер массива
+ * @return Указатель на созданный массив
+ */
+int* createArray(const size_t n);
+
+/**
+ * @brief Освобождает память, занятую динамическим массивом
+ * @param arr Указатель на массив для удаления
+ */
+void deleteArray(int* arr);
+
+/**
+ * @brief Выводит элементы массива в консоль
+ * @param arr Массив для вывода
+ * @param n Размер массива
+ */
+void printArray(const int* arr, const size_t n);
+
+/**
+ * @brief Заполняет массив значениями, введенными пользователем
+ * @param arr Массив для заполнения
+ * @param n Размер массива
+ */
+void fillArrayManually(int* arr, const size_t n);
+
+/**
+ * @brief Заполняет массив случайными числами в заданном диапазоне
+ * @param arr Массив для заполнения
+ * @param n Размер массива
+ * @note Запрашивает у пользователя минимальное и максимальное значения
+ */
+void fillArrayRandomly(int* arr, const size_t n);
+
+/**
+ * @brief Вычисляет сумму однозначных чисел в массиве (от 0 до 9)
+ * @param arr Массив для анализа
+ * @param n Размер массива
+ * @return Сумма однозначных чисел
+ */
+int sumOneDigitNumbers(const int* arr, const size_t n);
+
+/**
+ * @brief Переворачивает элементы массива между минимальным и максимальным элементами
+ * @param arr Массив для обработки
+ * @param n Размер массива
+ * @note Изменяет исходный массив
+ */
+void reverseBetweenMinMax(int* arr, const size_t n);
+
+/**
+ * @brief Находит последнюю пару соседних элементов с одинаковыми знаками и произведением меньше X
+ * @param arr Массив для поиска
+ * @param n Размер массива
+ * @param x Пороговое значение для произведения
+ * @return Индекс первого элемента пары или -1 если пара не найдена
+ */
+int findLastPair(const int* arr, const size_t n, const int x);
+
+/**
+ * @brief Рекурсивно заполняет массив случайными числами
+ * @param arr Массив для заполнения
+ * @param index Текущий индекс для заполнения (начинается с 0)
+ * @param n Размер массива
+ * @param min Минимальное значение случайных чисел
+ * @param max Максимальное значение случайных чисел
+ */
+void getRecurent(int* arr, const size_t index, const size_t n, const int min, const int max);
 
 int main() {
-    srand(time(nullptr));
+    srand(static_cast<unsigned int>(time(nullptr)));
     
     cout << "=== ЛАБОРАТОРНАЯ РАБОТА: РАБОТА С МАССИВАМИ ===" << endl;
     cout << "Программа выполняет различные операции с массивом целых чисел." << endl;
@@ -47,7 +127,7 @@ int main() {
     numberX = checkValue();
     
     cout << "Шаг 3: Создаем массив размера " << arraySize << "..." << endl;
-    int* myArray = createArray(arraySize);
+    int* myArray = createArray(static_cast<size_t>(arraySize));
     
     cout << "Выберите способ заполнения массива:" << endl;
     cout << FILL_MANUALLY << " - Ввести числа вручную" << endl;
@@ -59,12 +139,12 @@ int main() {
     switch(choice) {
         case FILL_MANUALLY:
             cout << "Выбран ручной ввод." << endl;
-            fillArrayManually(myArray, arraySize);
+            fillArrayManually(myArray, static_cast<size_t>(arraySize));
             break;
             
         case FILL_RANDOMLY:
             cout << "Выбран случайный ввод." << endl;
-            fillArrayRandomly(myArray, arraySize);
+            fillArrayRandomly(myArray, static_cast<size_t>(arraySize));
             break;
             
         default:
@@ -76,25 +156,25 @@ int main() {
     cout << "=== РЕЗУЛЬТАТЫ ===" << endl;
     
     cout << "1. Исходный массив:" << endl;
-    printArray(myArray, arraySize);
+    printArray(myArray, static_cast<size_t>(arraySize));
     
     cout << "2. Сумма однозначных чисел (от 0 до 9):" << endl;
-    int oneDigitSum = sumOneDigitNumbers(myArray, arraySize);
+    int oneDigitSum = sumOneDigitNumbers(myArray, static_cast<size_t>(arraySize));
     cout << "   Результат: " << oneDigitSum << endl;
     
     cout << "3. Переворачиваем элементы между минимальным и максимальным:" << endl;
-    int* copiedArray = new int[arraySize];
-    for (int i = 0; i < arraySize; i++) {
+    int* copiedArray = new int[static_cast<size_t>(arraySize)];
+    for (size_t i = 0; i < static_cast<size_t>(arraySize); i++) {
         copiedArray[i] = myArray[i];
     }
-    reverseBetweenMinMax(copiedArray, arraySize);
+    reverseBetweenMinMax(copiedArray, static_cast<size_t>(arraySize));
     cout << "   Результат: ";
-    printArray(copiedArray, arraySize);
+    printArray(copiedArray, static_cast<size_t>(arraySize));
     delete[] copiedArray;
     
     cout << "4. Поиск последней пары соседних элементов:" << endl;
     cout << "   Условие: одинаковые знаки И произведение < " << numberX << endl;
-    int pairIndex = findLastPair(myArray, arraySize, numberX);
+    int pairIndex = findLastPair(myArray, static_cast<size_t>(arraySize), numberX);
     
     if (pairIndex != -1) {
         cout << "   Найдена пара на позициях " << pairIndex + 1 
@@ -109,7 +189,7 @@ int main() {
     cout << "=== ДОПОЛНИТЕЛЬНО: РЕКУРРЕНТНЫЙ МЕТОД ===" << endl;
     cout << "Создаем маленький массив (5 элементов) и заполняем рекурсивно:" << endl;
     
-    int recurentSize = 5;
+    const size_t recurentSize = 5;
     int* recurentArray = createArray(recurentSize);
     getRecurent(recurentArray, 0, recurentSize, 1, 100);
     
@@ -123,8 +203,13 @@ int main() {
     return 0;  
 }
 
+/**
+ * @brief Проверяет корректность ввода целого числа
+ * @return Введенное пользователем целое число
+ * @note При ошибке ввода завершает программу с кодом 1
+ */
 int checkValue() {
-    int value;
+    int value = 0;
     cin >> value;
     
     if (cin.fail()) {
@@ -136,6 +221,12 @@ int checkValue() {
     return value;
 }
 
+/**
+ * @brief Проверяет, является ли число положительным
+ * @param value Проверяемое значение
+ * @param paramName Название параметра для вывода в сообщении об ошибке
+ * @return true если значение положительное, иначе false
+ */
 bool checkPositive(const int value, const string &paramName) {
     if (value <= 0) {
         cout << "Ошибка! Параметр '" << paramName 
@@ -145,6 +236,12 @@ bool checkPositive(const int value, const string &paramName) {
     return true;
 }
 
+/**
+ * @brief Проверяет корректность интервала (min <= max)
+ * @param min Минимальное значение интервала
+ * @param max Максимальное значение интервала
+ * @return true если интервал корректен, иначе false
+ */
 bool checkInterval(const int min, const int max) {
     if (min > max) {
         cout << "Ошибка! Минимальное значение (" << min 
@@ -154,21 +251,35 @@ bool checkInterval(const int min, const int max) {
     return true;
 }
 
-int* createArray(const int n) {
+/**
+ * @brief Создает динамический массив целых чисел
+ * @param n Размер массива
+ * @return Указатель на созданный массив
+ */
+int* createArray(const size_t n) {
     return new int[n];
 }
 
+/**
+ * @brief Освобождает память, занятую динамическим массивом
+ * @param arr Указатель на массив для удаления
+ */
 void deleteArray(int* arr) {
     delete[] arr;
 }
 
-void printArray(const int* arr, const int n) {
+/**
+ * @brief Выводит элементы массива в консоль
+ * @param arr Массив для вывода
+ * @param n Размер массива
+ */
+void printArray(const int* arr, const size_t n) {
     if (n <= 0) {
         cout << "Массив пуст" << endl;
         return;
     }
     
-    for (int i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         cout << arr[i];
         if (i < n - 1) {
             cout << ", ";
@@ -177,16 +288,27 @@ void printArray(const int* arr, const int n) {
     cout << endl;  
 }
 
-void fillArrayManually(int* arr, const int n) {
+/**
+ * @brief Заполняет массив значениями, введенными пользователем
+ * @param arr Массив для заполнения
+ * @param n Размер массива
+ */
+void fillArrayManually(int* arr, const size_t n) {
     cout << "Введите " << n << " чисел:" << endl;
     
-    for (int i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         cout << "Элемент " << i + 1 << ": ";
         arr[i] = checkValue();
     }
 }
 
-void fillArrayRandomly(int* arr, const int n) {
+/**
+ * @brief Заполняет массив случайными числами в заданном диапазоне
+ * @param arr Массив для заполнения
+ * @param n Размер массива
+ * @note Запрашивает у пользователя минимальное и максимальное значения
+ */
+void fillArrayRandomly(int* arr, const size_t n) {
     int minValue = 0;
     int maxValue = 0;
     
@@ -200,7 +322,7 @@ void fillArrayRandomly(int* arr, const int n) {
         return; 
     }
     
-    for (int i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         arr[i] = rand() % (maxValue - minValue + 1) + minValue;
     }
     
@@ -208,10 +330,16 @@ void fillArrayRandomly(int* arr, const int n) {
          << minValue << " до " << maxValue << endl;
 }
 
-int sumOneDigitNumbers(const int* arr, const int n) {
+/**
+ * @brief Вычисляет сумму однозначных чисел в массиве (от 0 до 9)
+ * @param arr Массив для анализа
+ * @param n Размер массива
+ * @return Сумма однозначных чисел
+ */
+int sumOneDigitNumbers(const int* arr, const size_t n) {
     int sum = 0;
     
-    for (int i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         if (arr[i] >= 0 && arr[i] < 10) {
             sum += arr[i];
         }
@@ -220,16 +348,22 @@ int sumOneDigitNumbers(const int* arr, const int n) {
     return sum;  
 }
 
-void reverseBetweenMinMax(int* arr, const int n) {
+/**
+ * @brief Переворачивает элементы массива между минимальным и максимальным элементами
+ * @param arr Массив для обработки
+ * @param n Размер массива
+ * @note Изменяет исходный массив
+ */
+void reverseBetweenMinMax(int* arr, const size_t n) {
     if (n < 2) {
         cout << "Массив слишком маленький для этой операции." << endl;
         return;
     }
     
-    int minIndex = 0;
-    int maxIndex = 0;
+    size_t minIndex = 0;
+    size_t maxIndex = 0;
     
-    for (int i = 1; i < n; i++) {
+    for (size_t i = 1; i < n; i++) {
         if (arr[i] < arr[minIndex]) {
             minIndex = i;
         }
@@ -247,8 +381,8 @@ void reverseBetweenMinMax(int* arr, const int n) {
         swap(minIndex, maxIndex);
     }
     
-    int left = minIndex + 1;
-    int right = maxIndex - 1;
+    size_t left = minIndex + 1;
+    size_t right = maxIndex - 1;
     
     while (left < right) {
         swap(arr[left], arr[right]);
@@ -260,22 +394,37 @@ void reverseBetweenMinMax(int* arr, const int n) {
          << minIndex + 1 << " и " << maxIndex + 1 << endl;
 }
 
-int findLastPair(const int* arr, const int n, const int x) {
+/**
+ * @brief Находит последнюю пару соседних элементов с одинаковыми знаками и произведением меньше X
+ * @param arr Массив для поиска
+ * @param n Размер массива
+ * @param x Пороговое значение для произведения
+ * @return Индекс первого элемента пары или -1 если пара не найдена
+ */
+int findLastPair(const int* arr, const size_t n, const int x) {
     int lastFoundIndex = -1;
     
-    for (int i = 0; i < n - 1; i++) {
+    for (size_t i = 0; i < n - 1; i++) {
         bool sameSign = (arr[i] >= 0 && arr[i + 1] >= 0) || 
                        (arr[i] < 0 && arr[i + 1] < 0);
         
         if (sameSign && arr[i] * arr[i + 1] < x) {
-            lastFoundIndex = i;
+            lastFoundIndex = static_cast<int>(i);
         }
     }
     
     return lastFoundIndex;
 }
 
-void getRecurent(int* arr, const int index, const int n, const int min, const int max) {
+/**
+ * @brief Рекурсивно заполняет массив случайными числами
+ * @param arr Массив для заполнения
+ * @param index Текущий индекс для заполнения (начинается с 0)
+ * @param n Размер массива
+ * @param min Минимальное значение случайных чисел
+ * @param max Максимальное значение случайных чисел
+ */
+void getRecurent(int* arr, const size_t index, const size_t n, const int min, const int max) {
     if (index >= n) {
         return;  
     }
