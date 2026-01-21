@@ -1,124 +1,233 @@
 #include <iostream>
 #include <cmath>
 #include <iomanip>
+#include <limits>
+
 using namespace std;
 
-int main() {
+/**
+ * @brief Проверяет корректность ввода неотрицательного целого числа
+ * @return Введенное пользователем неотрицательное целое число
+ */
+int checkIntValue();
+
+/**
+ * @brief Проверяет корректность ввода числа с плавающей точкой
+ * @return Введенное пользователем число
+ */
+double checkDoubleValue();
+
+/**
+ * @brief Вычисляет сумму первых n членов ряда
+ * @param n Количество членов ряда (должно быть >= 0)
+ * @return Сумма первых n членов ряда
+ */
+double calculateSumN(const int n);
+
+/**
+ * @brief Вычисляет сумму членов ряда, модуль которых не меньше e
+ * @param e Заданный порог для модуля члена ряда
+ * @return Сумма членов ряда, удовлетворяющих условию
+ */
+double calculateSumE(const double e);
+
+/**
+ * @brief Главная функция программы
+ * @return 0 в случае успешного выполнения, 1 в случае ошибки
+ */
+int main()
+{
     int n = 0;
-    double e 0.0;
+    double e = 0.0;
+    double s_n = 0.0;
+    double s_e = 0.0;
     
+    cout << "==========================================" << endl;
     cout << "Вычисление суммы ряда" << endl;
     cout << "Ряд: sum(k=0 to n) [(-1)^k / (k! * (k+1)!)]" << endl;
+    cout << "==========================================" << endl;
     
     // Часть a: сумма первых n членов
-    cout << "Часть a: сумма первых n членов" << endl;
-    cout << "Введите количество членов ряда (n): ";
-    cin >> n;
+    cout << "--- Часть a: сумма первых n членов ---" << endl;
+    cout << "Введите количество членов ряда (n >= 0): ";
+    n = checkIntValue();
     
-    // Проверка ввода n
-    if (cin.fail() || n < 0) {
+    if (n < 0)
+    {
         cout << "Ошибка! n должно быть неотрицательным целым числом!" << endl;
         return 1;
     }
     
-    // Вычисление суммы первых n членов
-    double s_n = 0;
-    double f_k = 1;      // для k!
-    double f_k1 = 1;     // для (k+1)!
+    s_n = calculateSumN(n);
+    cout << fixed << setprecision(10);
+    cout << "Сумма первых " << n << " членов ряда: " << s_n << endl;
+    
+    // Часть b: сумма элементов с |элемент| >= e
+    cout << "--- Часть b: сумма элементов с |элемент| >= e ---" << endl;
+    cout << "Введите точность e: ";
+    e = checkDoubleValue();
+    
+    // Для e <= 0 выводим предупреждение, но продолжаем вычисления
+    if (e <= 0)
+    {
+        cout << "Внимание: e <= 0. Будут суммироваться все члены ряда до достижения предела итераций." << endl;
+    }
+    
+    s_e = calculateSumE(e);
+    cout << fixed << setprecision(10);
+    cout << "Сумма элементов с |элемент| >= " << e << ": " << s_e << endl;
+    
+    cout << "==========================================" << endl;
+    cout << "Программа завершена успешно." << endl;
+    
+    return 0;
+}
+
+/**
+ * @brief Проверяет корректность ввода неотрицательного целого числа
+ * @return Введенное пользователем неотрицательное целое число
+ */
+int checkIntValue()
+{
+    int value = 0;
+    cin >> value;
+    
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Ошибка ввода! Введите целое число: ";
+        return checkIntValue(); // Рекурсивный вызов для повторного ввода
+    }
+    
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    return value;
+}
+
+/**
+ * @brief Проверяет корректность ввода числа с плавающей точкой
+ * @return Введенное пользователем число
+ */
+double checkDoubleValue()
+{
+    double value = 0.0;
+    cin >> value;
+    
+    if (cin.fail())
+    {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Ошибка ввода! Введите число: ";
+        return checkDoubleValue(); 
+    }
+    
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    return value;
+}
+
+/**
+ * @brief Вычисляет сумму первых n членов ряда
+ * @param n Количество членов ряда (должно быть >= 0)
+ * @return Сумма первых n членов ряда
+ */
+double calculateSumN(const int n)
+{
+    if (n < 0)
+    {
+        return 0.0;
+    }
+    
+    double sum = 0.0;
+    double term = 1.0; // a_0 = 1 / (0! * 1!) = 1
     
     cout << "Процесс вычисления:" << endl;
     cout << "+-----+---------------------+---------------------+" << endl;
     cout << "|  k  |      Текущий        |   Текущая сумма     |" << endl;
     cout << "+-----+---------------------+---------------------+" << endl;
     
-    for (int k = 0; k <= n; k++) {
-        // Вычисляем знаменатель: k! * (k+1)!
-        double z = f_k * f_k1;
+    for (int k = 0; k <= n; k++)
+    {
+        sum += term;
         
-        // Вычисляем текущий элемент
-        double a;
-        if (k % 2 == 0) {
-            a = 1.0 / z;
-        } else {
-            a = -1.0 / z;
-        }
-        
-        s_n += a;
-        
-        // Выводим шаг вычисления
         cout << fixed << setprecision(10);
         cout << "| " << setw(3) << k << " | " 
-             << setw(19) << a << " | "
-             << setw(19) << s_n << " |" << endl;
+             << setw(19) << term << " | "
+             << setw(19) << sum << " |" << endl;
         
-        // Подготавливаем факториалы для следующего k
-        if (k < n) {
-            f_k *= (k + 1);
-            f_k1 *= (k + 2);
+        // Рекуррентное вычисление следующего члена:
+        // a_{k+1} = -a_k / ((k+1)*(k+2))
+        if (k < n)
+        {
+            term = -term / ((k + 1.0) * (k + 2.0));
         }
     }
     
     cout << "+-----+---------------------+---------------------+" << endl;
-    cout << "Сумма первых " << n << " членов ряда: " 
-         << fixed << setprecision(10) << s_n << endl;
+    return sum;
+}
+
+/**
+ * @brief Вычисляет сумму членов ряда, модуль которых не меньше e
+ * @param e Заданный порог для модуля члена ряда
+ * @return Сумма членов ряда, удовлетворяющих условию
+ */
+double calculateSumE(const double e)
+{
+    const int MAX_ITERATIONS = 1000; // Ограничение на количество итераций
     
-    // Часть b: сумма элементов с |элемент| >= e
-    cout << "Часть b: сумма элементов с |элемент| >= e" << endl;
-    cout << "Введите точность e (например, 0.0001): ";
-    cin >> e;
-    
-    // Проверка ввода e
-    if (cin.fail() || e <= 0) {
-        cout << "Ошибка! e должно быть положительным числом!" << endl;
-        return 1;
-    }
-    
-    // Вычисление суммы элементов с |элемент| >= e
-    double s_e = 0;
+    double sum = 0.0;
+    double term = 1.0; // a_0 = 1
     int k = 0;
-    double a = 0;
+    int iterations = 0;
     
-    // Сброс факториалов
-    f_k = 1;
-    f_k1 = 1;
-    
-    cout << "Вычисление суммы для e = " << e << ":" << endl;
+    cout << "Процесс вычисления (только члены с |элемент| >= " << e << "):" << endl;
     cout << "+-----+---------------------+---------------------+" << endl;
     cout << "|  k  |      Текущий        |   Текущая сумма     |" << endl;
     cout << "+-----+---------------------+---------------------+" << endl;
     
-    do {
-        // Вычисляем знаменатель
-        double z = f_k * f_k1;
+    // Если e <= 0, то условие |term| >= e выполняется всегда
+    // Но мы ограничиваем количество итераций
+    bool condition = true;
+    
+    while (condition && iterations < MAX_ITERATIONS)
+    {
+        sum += term;
         
-        // Вычисляем текущий элемент
-        if (k % 2 == 0) {
-            a = 1.0 / z;
-        } else {
-            a = -1.0 / z;
-        }
+        cout << fixed << setprecision(10);
+        cout << "| " << setw(3) << k << " | " 
+             << setw(19) << term << " | "
+             << setw(19) << sum << " |" << endl;
         
-        // Если |элемент| >= e, добавляем к сумме
-        if (fabs(a) >= e) {
-            s_e += a;
-            
-            cout << fixed << setprecision(10);
-            cout << "| " << setw(3) << k << " | " 
-                 << setw(19) << a << " | "
-                 << setw(19) << s_e << " |" << endl;
-        }
-        
-        // Подготавливаем факториалы для следующего k
+        // Вычисляем следующий член рекуррентно:
+        // a_{k+1} = -a_k / ((k+1)*(k+2))
+        term = -term / ((k + 1.0) * (k + 2.0));
         k++;
-        f_k *= k;
-        f_k1 *= (k + 1);
+        iterations++;
         
-    } while (fabs(a) >= e);
+        // Обновляем условие для следующей итерации
+        if (e > 0)
+        {
+            condition = (fabs(term) >= e);
+        }
+        // Если e <= 0, condition остается true, но ограничено MAX_ITERATIONS
+    }
     
     cout << "+-----+---------------------+---------------------+" << endl;
-    cout << "Итоговая сумма элементов с |элемент| >= " << e << ": " 
-         << fixed << setprecision(10) << s_e << endl;
-    cout << "Количество учтенных элементов: " << k << endl;
     
-    return 0;
+    if (iterations >= MAX_ITERATIONS && e <= 0)
+    {
+        cout << "Внимание: достигнут предел итераций (" << MAX_ITERATIONS 
+             << "). Сумма вычислена для первых " << MAX_ITERATIONS << " членов." << endl;
+    }
+    else if (iterations >= MAX_ITERATIONS)
+    {
+        cout << "Внимание: достигнут предел итераций (" << MAX_ITERATIONS 
+             << "). Возможно, e слишком малое." << endl;
+    }
+    else
+    {
+        cout << "Количество учтенных элементов: " << k << endl;
+    }
+    
+    return sum;
 }
