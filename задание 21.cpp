@@ -95,9 +95,6 @@ int main() {
     
     return 0;
 }
-    
-    return 0;
-}
 
 float Pv(const float x1, const float y1, const float x2, const float y2, const float x3, const float y3) {
     // Длины сторон
