@@ -22,7 +22,7 @@ enum Operation {
 * @param x3, y3 - координаты третьей вершины
 * @return периметр треугольника
 */
-float Pv(float x1, float y1, float x2, float y2, float x3, float y3);
+float Pv(const float x1, const float y1, const float x2, const float y2, const float x3, const float y3);
 
 /**
 * @brief Вычисляет площадь треугольника по координатам вершин
@@ -31,7 +31,7 @@ float Pv(float x1, float y1, float x2, float y2, float x3, float y3);
 * @param x3, y3 - координаты третьей вершины
 * @return площадь треугольника
 */
-float Sv(float x1, float y1, float x2, float y2, float x3, float y3);
+float Sv(const float x1, const float y1, const float x2, const float y2, const float x3, const float y3);
 
 /**
 * @brief Основная функция программы
@@ -66,15 +66,9 @@ int main() {
     cout << "Что вы хотите вычислить?" << endl;
     cout << P << " - Периметр треугольника" << endl;
     cout << S << " - Площадь треугольника" << endl;
-    cout << "Ваш выбор (1 или 2): ";
+    cout << "Ваш выбор (P или S): ";
     cin >> w;
-    
-    // Правильно или нет
-    if (w != P && w != S) {
-        cout << "Ошибка! Нужно выбрать 1 или 2!" << endl;
-        return 1; // Завершаем программу с ошибкой
-    }
-    
+     
     //Информация о треугольнике
     cout << "Информация о треугольнике" << endl;
     cout << "Вершина A: (" << x1 << ", " << y1 << ")" << endl;
@@ -82,7 +76,7 @@ int main() {
     cout << "Вершина C: (" << x3 << ", " << y3 << ")" << endl;
     
     // Выполняем операцию
-    switch (w) {
+   switch (w) {
         case P: {
             float result = Pv(x1, y1, x2, y2, x3, y3);
             cout << "Периметр треугольника: " << result << endl;
@@ -93,12 +87,19 @@ int main() {
             cout << "Площадь треугольника: " << result << endl;
             break;
         }
+        default: {
+            cout << "Ошибка! Нужно выбрать P или S!" << endl;
+            return 1;
+        }
     }
     
     return 0;
 }
+    
+    return 0;
+}
 
-float Pv(float x1, float y1, float x2, float y2, float x3, float y3) {
+float Pv(const float x1, const float y1, const float x2, const float y2, const float x3, const float y3) {
     // Длины сторон
     float a = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
     float b = sqrt(pow(x3 - x2, 2) + pow(y3 - y2, 2));
@@ -112,7 +113,7 @@ float Pv(float x1, float y1, float x2, float y2, float x3, float y3) {
     return a + b + c;
 }
 
-float Sv(float x1, float y1, float x2, float y2, float x3, float y3) {
+float Sv(const float x1, const float y1, const float x2, const float y2, const float x3, const float y3) {
     // Вычисляем длины сторон
     float a = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
     float b = sqrt(pow(x3 - x2, 2) + pow(y3 - y2, 2));
