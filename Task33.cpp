@@ -217,8 +217,8 @@ double getFunc(const double a) {
 * @param n индекс элемента последовательности
 * @return Возвращает значение следующего элемента ряда
 */
-double nextElement(const double previous, const double a, const int n) {
-    return previous * (a * a) / ((2.0 * n - 1.0) * (2.0 * n));
+double nextElement(const double a, const int n) {
+    return (a * a) / ((2.0 * n) * (2.0 * n + 1.0));
 }
 
 /**
@@ -238,20 +238,10 @@ double getSum(const double a, const double eps, const int maxIterations) {
     double element = a;
     int k = 1;  // Номер текущего элемента (начиная с 1 для второго элемента)
     
-    while (k < maxIterations) {
-        // Вычисляем следующий элемент (ошибку расчета)
-        double nextElem = nextElement(element, a, k);
-        
-        // Сравниваем ошибку расчета с эпсилон
-        if (fabs(nextElem) <= eps) {
-            break;  // Достигнута требуемая точность
-        }
-        
-        // Добавляем элемент к сумме
-        element = nextElem;
-        sum += element;
-        k++;
-    }
+    while (fabs(element) > eps) { // Цикл продолжается, пока член ряда больше точности
+    sum += element;
+    element *= nextElement(a, ++k); 
+}
     
     return sum;
 }
